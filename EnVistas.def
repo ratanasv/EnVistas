@@ -1,0 +1,15 @@
+; EnVistas.def : Declares the module parameters for the DLL.
+
+LIBRARY   "EnVistas"
+
+EXPORTS
+    ; Explicit exports can go here
+
+GetExtInfo @1
+VInit  @2
+VInitRun	@3
+VRun   @4
+VEndRun @5
+VSetup	@6
+VInitWindow @7
+VUpdateWindow @8
