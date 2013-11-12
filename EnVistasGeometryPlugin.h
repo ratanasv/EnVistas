@@ -1,8 +1,15 @@
+#pragma once
+
+#include <vistas/vistas.h>
+
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
 
 class EnVistasGeometryPlugin : public VI_ShapeDataPlugin {
+public:
+	EnVistasGeometryPlugin() {};
+
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
 	virtual	VI_PluginType	GetType();
