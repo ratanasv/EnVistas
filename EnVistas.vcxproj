@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(ConfigurationName);Z:\bin\scidb-vistas\x64\v100\Debug;Z:\bin\scidb-vistas\x64\v100\Debug\Plugins</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -116,7 +116,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\x64\v100\Debug;Z:\bin\scidb-vistas\x64\v100\Debug\Plugins</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -145,7 +145,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(ConfigurationName);Z:\bin\scidb-vistas\x64\v100\Debug;Z:\bin\scidb-vistas\x64\v100\Debug\Plugins</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -174,7 +174,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\x64\v100\Debug;Z:\bin\scidb-vistas\x64\v100\Debug\Plugins</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

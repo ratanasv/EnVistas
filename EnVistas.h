@@ -4,39 +4,41 @@
 #include <PtrArray.h>
 //#include <FDataObj.h>
 
-//#include <vistas\vistas.h>
+
 
 
 // Basic idea - Create a window that 
 
-class EnVistasWnd : public CWnd
-{
-DECLARE_DYNCREATE( EnVistasWnd )
-// Construction
+class EnVistasWnd : public CWnd {
+	DECLARE_DYNCREATE( EnVistasWnd )
+	// Construction
 public:
 	EnVistasWnd();
-   ~EnVistasWnd() { }
+	~EnVistasWnd() { }
 
-   int m_currentRun;
-   int m_currentYear;
-   bool m_useCurrent;
+	int m_currentRun;
+	int m_currentYear;
+	bool m_useCurrent;
 
 protected:
-   bool   m_activated;
+	bool   m_activated;
 
-   // Generated message map functions
+	// Generated message map functions
 protected:
 	//{{AFX_MSG(Map)
 	//afx_msg void OnPaint();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+
+	void CreateWinGLContext();
+
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-   afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-   
-//}}AFX_MSG
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+
+	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 public:
 
-   afx_msg void OnSize(UINT nType, int cx, int cy);
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };
 
 

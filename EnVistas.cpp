@@ -6,6 +6,7 @@
 #pragma hdrstop
 
 #include "EnVistas.h"
+#include <vistas\vistas.h>
 
 
 #ifdef _DEBUG
@@ -58,9 +59,12 @@ END_MESSAGE_MAP()
 int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 	if (CWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+	CreateWinGLContext();
 
 	// Window is created, set it up for VISTAS
 	// TODO: 
+	bool isOk = VI_Init3D();
+	assert(isOk);
 
 	return 0;
 }
@@ -84,6 +88,37 @@ void EnVistasWnd::OnSize(UINT nType, int cx, int cy) {
 void EnVistasWnd::OnMouseMove( UINT nFlags, CPoint point) {
 
 	CWnd::OnMouseMove(nFlags, point);
+}
+
+void EnVistasWnd::CreateWinGLContext()
+{
+	PIXELFORMATDESCRIPTOR pfd = {
+		sizeof(PIXELFORMATDESCRIPTOR),
+		1,
+		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
+		PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
+		32,                        //Colordepth of the framebuffer.
+		0, 0, 0, 0, 0, 0,
+		0,
+		0,
+		0,
+		0, 0, 0, 0,
+		24,                        //Number of bits for the depthbuffer
+		8,                        //Number of bits for the stencilbuffer
+		0,                        //Number of Aux buffers in the framebuffer.
+		PFD_MAIN_PLANE,
+		0,
+		0, 0, 0
+	};
+
+	CDC* ourWindowHandleToDeviceContext = GetDC();
+
+	int  letWindowsChooseThisPixelFormat;
+	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*ourWindowHandleToDeviceContext, &pfd); 
+	SetPixelFormat(*ourWindowHandleToDeviceContext,letWindowsChooseThisPixelFormat, &pfd);
+
+	HGLRC ourOpenGLRenderingContext = wglCreateContext(*ourWindowHandleToDeviceContext);
+	wglMakeCurrent(*ourWindowHandleToDeviceContext, ourOpenGLRenderingContext);
 }
 
 
