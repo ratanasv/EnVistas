@@ -2,6 +2,7 @@
 
 #include <EnvExtension.h>
 #include <PtrArray.h>
+#include "EnVistasGeometryPlugin.h"
 //#include <FDataObj.h>
 
 
@@ -84,28 +85,8 @@ public:
 };
 
 
+
 /*
-
-////////////////////////////////////
-// shape provider for Vistas engine
-////////////////////////////////////
-
-class EnVistasGeometryPlugin : public VI_ShapeDataPlugin
-{
-public:
-   EnVistasGeometryPlugin( MapLayer *pLayer ) : VI_ShapeDataPlugin(), m_pMapLayer( pLayer ) { }
-
-   // VISTAS interface
-   virtual bool ValuesAreTemporal();
-   virtual int GetNumShapes();
-   virtual VI_ShapeArrayRef GetShapeArray();
-
-
-   MapLayer *m_pMapLayer;
-
-};
-
-
 ////////////////////////////////////
 // data provider for Vistas engine
 ////////////////////////////////////

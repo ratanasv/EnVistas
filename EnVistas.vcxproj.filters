@@ -36,6 +36,9 @@
     <ClCompile Include="..\EnvExtension.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EnVistasGeometryPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -51,6 +54,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\EnvExtension.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnVistasGeometryPlugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
