@@ -19,7 +19,7 @@ public:
 	int m_currentRun;
 	int m_currentYear;
 	bool m_useCurrent;
-
+	CDC* deviceContext;
 protected:
 	bool   m_activated;
 

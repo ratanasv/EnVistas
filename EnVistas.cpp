@@ -112,14 +112,14 @@ void EnVistasWnd::CreateWinGLContext()
 		0, 0, 0
 	};
 
-	CDC* ourWindowHandleToDeviceContext = GetDC();
+	deviceContext = GetDC();
 
 	int  letWindowsChooseThisPixelFormat;
-	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*ourWindowHandleToDeviceContext, &pfd); 
-	SetPixelFormat(*ourWindowHandleToDeviceContext,letWindowsChooseThisPixelFormat, &pfd);
+	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*deviceContext, &pfd); 
+	SetPixelFormat(*deviceContext,letWindowsChooseThisPixelFormat, &pfd);
 
-	HGLRC ourOpenGLRenderingContext = wglCreateContext(*ourWindowHandleToDeviceContext);
-	wglMakeCurrent(*ourWindowHandleToDeviceContext, ourOpenGLRenderingContext);
+	HGLRC ourOpenGLRenderingContext = wglCreateContext(*deviceContext);
+	wglMakeCurrent(*deviceContext, ourOpenGLRenderingContext);
 }
 
 
@@ -204,6 +204,8 @@ BOOL EnVistas::UpdateWindow( EnvContext *pContext, HWND hParent ) {
 	VI_Camera camera;
 	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
 	camera.Render(rect.right-rect.left, rect.bottom);
+	//bool isOk = SwapBuffers(*pWnd->deviceContext);
+//	assert(isOk);
 
 	// VISTAS STUFF
 	/*
