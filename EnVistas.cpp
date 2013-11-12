@@ -7,6 +7,7 @@
 
 #include "EnVistas.h"
 #include <vistas\vistas.h>
+#include <cassert>
 
 
 #ifdef _DEBUG
@@ -199,6 +200,10 @@ BOOL EnVistas::UpdateWindow( EnvContext *pContext, HWND hParent ) {
 
 	pParent->GetClientRect( &rect );
 	pWnd->MoveWindow( &rect, FALSE );
+	
+	VI_Camera camera;
+	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
+	camera.Render(rect.right-rect.left, rect.bottom);
 
 	// VISTAS STUFF
 	/*
