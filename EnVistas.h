@@ -20,14 +20,14 @@ public:
 	int m_currentRun;
 	int m_currentYear;
 	bool m_useCurrent;
-	CDC* deviceContext;
 protected:
 	bool   m_activated;
+	HGLRC glContext;
 
 	// Generated message map functions
 protected:
 	//{{AFX_MSG(Map)
-	//afx_msg void OnPaint();
+	afx_msg void OnPaint();
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 
 	void CreateWinGLContext();
@@ -40,6 +40,7 @@ protected:
 public:
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
+	void Paint(int width, int height, EnvContext* envContext);
 };
 
 

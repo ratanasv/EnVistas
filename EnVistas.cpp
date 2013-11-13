@@ -6,7 +6,8 @@
 #pragma hdrstop
 
 #include "EnVistas.h"
-#include <vistas\vistas.h>
+#include <gl/GL.h>
+#include <gl/GLU.h>
 #include <cassert>
 
 
@@ -45,16 +46,9 @@ END_MESSAGE_MAP()
 /////////////////////////////////////////////////////////////////////////////
 // Map message handlers
 
-//void EnVistasWnd::OnPaint() 
-//   {
-//   CPaintDC dc(this); // device context for painting
-//
-//   //MemDC mdc( &dc );
-//   //
-//   //// draw map
-//   //DrawBackground( mdc );
-//   //DrawNetworkCircular( mdc, m_useCurrent );
-//   }
+void EnVistasWnd::OnPaint() {
+	
+}
 
 
 int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
@@ -91,8 +85,7 @@ void EnVistasWnd::OnMouseMove( UINT nFlags, CPoint point) {
 	CWnd::OnMouseMove(nFlags, point);
 }
 
-void EnVistasWnd::CreateWinGLContext()
-{
+void EnVistasWnd::CreateWinGLContext() {
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),
 		1,
@@ -112,16 +105,54 @@ void EnVistasWnd::CreateWinGLContext()
 		0, 0, 0
 	};
 
-	deviceContext = GetDC();
+	auto deviceContext = GetDC();
 
 	int  letWindowsChooseThisPixelFormat;
 	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*deviceContext, &pfd); 
 	SetPixelFormat(*deviceContext,letWindowsChooseThisPixelFormat, &pfd);
 
-	HGLRC ourOpenGLRenderingContext = wglCreateContext(*deviceContext);
-	wglMakeCurrent(*deviceContext, ourOpenGLRenderingContext);
+	glContext = wglCreateContext(*deviceContext);
+	wglMakeCurrent(*deviceContext, glContext);
 }
 
+void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
+	auto oldDevContext = wglGetCurrentDC();
+	auto oldGLContext = wglGetCurrentContext();
+
+	auto devContext = GetDC();
+	wglMakeCurrent(*devContext, glContext);
+
+// 	VI_Camera camera;
+// 	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
+// 	camera.Render(width, height);
+	glViewport(0,0,width,height);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(-1.,1.,-1.,1.);
+	glMatrixMode(GL_MODELVIEW);
+	glClearColor(0.,0.,0.,1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBegin(GL_QUADS);
+	glColor3f(1.0,0.0,0.0);
+	glVertex2f(-0.8,-0.8);
+	glColor3f(0.0,1.0,0.0);
+	glVertex2f( 0.8,-0.8);
+	glColor3f(0.0,0.0,1.0);
+	glVertex2f( 0.8, 0.8);
+	glColor3f(1.0,1.0,1.0);
+	glVertex2f(-0.8, 0.8);
+	glEnd();
+
+
+
+	bool isOk = SwapBuffers(*devContext);
+	if (!isOk) {
+		fprintf(stderr, "%u\n", GetLastError());
+	}
+
+	ReleaseDC(devContext);
+	wglMakeCurrent(oldDevContext, oldGLContext);
+}
 
 
 ///////////////////////////////////////////////////////////////
@@ -200,10 +231,8 @@ BOOL EnVistas::UpdateWindow( EnvContext *pContext, HWND hParent ) {
 
 	pParent->GetClientRect( &rect );
 	pWnd->MoveWindow( &rect, FALSE );
-	
-	VI_Camera camera;
-	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
-	camera.Render(rect.right-rect.left, rect.bottom);
+
+	pWnd->Paint(rect.bottom, rect.right, pContext);
 	//bool isOk = SwapBuffers(*pWnd->deviceContext);
 //	assert(isOk);
 

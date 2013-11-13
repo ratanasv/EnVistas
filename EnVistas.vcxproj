@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -116,7 +116,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -145,7 +145,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -174,7 +174,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
