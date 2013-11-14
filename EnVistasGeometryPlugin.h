@@ -2,13 +2,13 @@
 
 #include <vistas/vistas.h>
 
+class MapLayer;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
-
 class EnVistasGeometryPlugin : public VI_ShapeDataPlugin {
 public:
-	EnVistasGeometryPlugin() {};
+	EnVistasGeometryPlugin(const MapLayer* in) : mapLayer(in) {};
 
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
@@ -47,5 +47,8 @@ public:
 	virtual MinMaxColorArray  GetMinMaxColorArray(
 		const VI_String& attribute);
 	virtual ColorLabelArray ObtainColorLabelArray(const VI_String& attribute);
+
+private:
+	const MapLayer* mapLayer;
 
 };

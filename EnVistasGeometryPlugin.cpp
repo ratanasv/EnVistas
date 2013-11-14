@@ -1,13 +1,15 @@
 #include "stdafx.h"
 #include "EnVistasGeometryPlugin.h"
 #include <stdexcept>
+#include <EnvExtension.h>
+#include <Maplayer.h>
+#include <vector>
+
+using std::vector;
+using std::logic_error;
 
 // this is the most ridiculous build error...
-wxEvtHandler::wxEvtHandler(const wxEvtHandler&) {
-
-}
-
-using std::logic_error;
+wxEvtHandler::wxEvtHandler(const wxEvtHandler&) { }
 
 static const VI_String METHOD_FOR_VISTAS_ERROR("This class is for interfacing with \
 												ENVISION. Most method are not \
@@ -15,6 +17,10 @@ static const VI_String METHOD_FOR_VISTAS_ERROR("This class is for interfacing wi
 
 static const VI_String NOT_YET_IMPLEMENTED_ERROR("Not implemented yet. Talk to Vir\
 												 about this.");
+
+template <class T> void deleteArray(void* data) {
+	delete[] (T*)data;
+}
 
 VI_String EnVistasGeometryPlugin::GetFactoryRegistryName() {
 	throw METHOD_FOR_VISTAS_ERROR;
@@ -29,7 +35,7 @@ VI_String EnVistasGeometryPlugin::GetName() {
 }
 
 void EnVistasGeometryPlugin::Set( const VI_Path& path ) {
-
+	throw NOT_YET_IMPLEMENTED_ERROR;
 }
 
 VI_DataType EnVistasGeometryPlugin::GetDataType() {
@@ -89,7 +95,40 @@ int EnVistasGeometryPlugin::GetNumShapes() {
 }
 
 VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	auto polyArray = mapLayer->m_pPolyArray;
+	unsigned numShapes = polyArray->GetCount();
+	vector<VI_Shape> shapeArray(numShapes);
+	for (unsigned i=0; i<numShapes; i++) {
+		auto shape = polyArray->ElementAt(i);
+		CDWordArray& parts = shape->m_vertexPartArray;
+		auto numParts = parts.GetCount();
+ 		VertexArray& vertices = shape->m_vertexArray;
+		auto numVerts = vertices.GetCount();
+
+		shapeArray[i].ShapeHeader.numparts = numParts;
+		shapeArray[i].ShapeHeader.numpoints = numVerts;
+		shapeArray[i].ShapeHeader.xmax = shape->m_xMax;
+		shapeArray[i].ShapeHeader.xmin = shape->m_xMin;
+		shapeArray[i].ShapeHeader.ymin = shape->m_yMin;
+		shapeArray[i].ShapeHeader.ymax = shape->m_yMax;
+		shapeArray[i].ShapeHeader.zmin = -1.0;
+		shapeArray[i].ShapeHeader.zmax = 1.0;
+		shapeArray[i].ShapeType = 15;
+		vector<int> partArray(numParts);
+		for (unsigned j=0; j<numParts; j++) {
+			partArray[j] = parts.ElementAt(j);
+		}
+		shapeArray[i].Parts = VI_DataRefBase<int>(partArray.data(), sizeof(int)*numParts, true);
+		vector<struct point3d> vertArray(numVerts);
+		for (unsigned j=0; j<numVerts; j++) {
+			vertArray[j].x = vertices.ElementAt(j).x;
+			vertArray[j].y = vertices.ElementAt(j).y;
+			vertArray[j].z = vertices.ElementAt(j).z;
+		}
+		shapeArray[i].Vertices = VI_DataRefBase<struct point3d>(vertArray.data(), 
+			sizeof(struct point3d)*numVerts, true);
+	}
+	return VI_DataRefBase<VI_Shape>(shapeArray.data(), sizeof(VI_Shape)*numShapes, true);
 }
 
 std::map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( const VI_String& attribute ) {

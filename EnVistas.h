@@ -3,9 +3,10 @@
 #include <EnvExtension.h>
 #include <PtrArray.h>
 #include "EnVistasGeometryPlugin.h"
+#include <memory>
 //#include <FDataObj.h>
 
-
+using std::shared_ptr;
 
 
 // Basic idea - Create a window that 
@@ -79,7 +80,7 @@ public:
    int m_currentYear;    // zero-based!!! not
 
    // VISTAS interface
-   //EnVistasGeometryPlugin *m_pGeometryPlugin;
+   shared_ptr<VI_ShapeDataPlugin> m_pGeometryPlugin;
    //EnVistasTablePlugin    *m_pTablePlugin;
    //SHP3D                  *m_pShp3D;
 

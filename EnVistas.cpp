@@ -161,17 +161,11 @@ void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 
 BOOL EnVistas::Init( EnvContext *pContext, LPCTSTR initStr ) {
 	//
-	/*
+	
 	// 1) create a shape provider for Vistas
-	m_pGeometryPlugin = new EnVistasGeometryPlugin( pContext->pMapLayer );
-
-	// 2) load VISTAS plugin
-	gPluginMgr->LoadPlugin( "Shp3D.DLL" );  // need fully qualified path
-
-	m_pShp3D = gPluginMgr->GetPluginInstance( _T("SHP3D" ) );   // in VISTAS 
-
-	m_pShp3D->SetData( pProv, 0 );   
-	*/
+	m_pGeometryPlugin.reset(new EnVistasGeometryPlugin( pContext->pMapLayer ));
+	auto shapeArray = m_pGeometryPlugin->GetShapeArray();
+	
 
 	// something similar for data
 	return TRUE;
