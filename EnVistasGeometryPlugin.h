@@ -48,6 +48,10 @@ public:
 		const VI_String& attribute);
 	virtual ColorLabelArray ObtainColorLabelArray(const VI_String& attribute);
 
+	virtual shared_ptr<vector<VI_ImmutableAbstract>> GetAttributeArray( const VI_String& attribute );
+
+	virtual VI_Abstract::AbstractType GetAttributeDataType( const VI_String& attribute );
+
 private:
 	const MapLayer* mapLayer;
 

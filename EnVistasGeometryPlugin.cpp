@@ -159,3 +159,11 @@ VI_ShapeDataPlugin::ColorLabelArray EnVistasGeometryPlugin::ObtainColorLabelArra
 	throw METHOD_FOR_VISTAS_ERROR;
 }
 
+shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArray( const VI_String& attribute ) {
+	throw std::exception("The method or operation is not implemented.");
+}
+
+VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI_String& attribute ) {
+	throw std::exception("The method or operation is not implemented.");
+}
+
