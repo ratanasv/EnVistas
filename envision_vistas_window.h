@@ -12,7 +12,7 @@ class EnVistasWnd : public CWnd {
 	DECLARE_DYNCREATE( EnVistasWnd )
 	// Construction
 public:
-	EnVistasWnd();
+	EnVistasWnd(const int width = 100, const int height = 100);
 	virtual ~EnVistasWnd() {}
 
 	int m_currentRun;
@@ -39,4 +39,10 @@ public:
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void Paint(int width, int height, EnvContext* envContext);
+	void SetWindowSize(int width, int height);
+	void SetEnvContext(EnvContext* context);
+private:
+	int windowWidth;
+	int windowHeight;
+	EnvContext* recentEnvContext;
 };

@@ -63,8 +63,6 @@ BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
 
 	EnVistasWnd *pWnd = AddWindow( pParent );   // adds and creates a window;
 
-	//CClientDC dc( pWnd );
-
 	pWnd->m_useCurrent = true;
 	pWnd->m_currentYear = pContext->currentYear;
 	pWnd->m_currentRun  = pContext->run;
@@ -99,25 +97,8 @@ BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	pParent->GetClientRect( &rect );
 	pWnd->MoveWindow( &rect, FALSE );
 
-	pWnd->Paint(rect.bottom, rect.right, pContext);
-	//bool isOk = SwapBuffers(*pWnd->deviceContext);
-//	assert(isOk);
-
-	// VISTAS STUFF
-	/*
-	CClientDC dc( pWnd );
-
-	//MemDC mdc( &dc );
-	//pWnd->DrawBackground( mdc );
-	//pWnd->DrawNetworkCircular( mdc, pWnd->m_useCurrent );   
-
-	// make this window the current GL Context
-	glu.....
-
-	/// VISTAS
-	pSHP3D->OnOption( VI_OptionEvent( ) );   // updated data passed here?
-
-	*/
+	pWnd->SetWindowSize(rect.right, rect.bottom);
+	pWnd->Paint(rect.right, rect.bottom, pContext);
 
 	return TRUE; 
 } 
@@ -127,7 +108,7 @@ EnVistasWnd* EnVistas::AddWindow(CWnd* parentWindowObject) {
 	RECT rect;
 	parentWindowObject->GetClientRect( &rect );
 
-	EnVistasWnd* windowObject = new EnVistasWnd();
+	EnVistasWnd* windowObject = new EnVistasWnd(rect.right, rect.bottom);
 	windowObject->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
 		rect, parentWindowObject, m_nextID++ );
 

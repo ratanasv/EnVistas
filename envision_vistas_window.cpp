@@ -11,9 +11,9 @@ IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 /////////////////////////////////////////////////////////////////////////////
 // EnVistasWnd
 
-EnVistasWnd::EnVistasWnd(): m_currentYear( -1 ), m_currentRun( -1 ), 
-	m_useCurrent( true ), m_activated(false) {}; 
-
+EnVistasWnd::EnVistasWnd(const int width, const int height): m_currentYear( -1 ), 
+	m_currentRun( -1 ), m_useCurrent( true ), m_activated(false), recentEnvContext(NULL), 
+	windowWidth(width), windowHeight(height) {}; 
 
 BEGIN_MESSAGE_MAP(EnVistasWnd, CWnd)
 	//{{AFX_MSG_MAP(EnVistasWnd)
@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 // Map message handlers
 
 void EnVistasWnd::OnPaint() {
-	assert(true);
+	Paint(windowWidth, windowHeight, recentEnvContext);
 }
 
 
@@ -74,35 +74,44 @@ void EnVistasWnd::CreateWinGLContext() {
 		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
 		PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
 		32,                        //Colordepth of the framebuffer.
-		0, 0, 0, 0, 0, 0,
-		0,
-		0,
-		0,
-		0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		24,                        //Number of bits for the depthbuffer
 		8,                        //Number of bits for the stencilbuffer
 		0,                        //Number of Aux buffers in the framebuffer.
-		PFD_MAIN_PLANE,
-		0,
-		0, 0, 0
+		PFD_MAIN_PLANE, 0, 0, 0, 0
 	};
 
-	auto deviceContext = GetDC();
+	auto deviceContext = GetDC()->m_hDC;
 
 	int  letWindowsChooseThisPixelFormat;
-	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*deviceContext, &pfd); 
-	SetPixelFormat(*deviceContext,letWindowsChooseThisPixelFormat, &pfd);
+	letWindowsChooseThisPixelFormat = ChoosePixelFormat(deviceContext, &pfd); 
+	SetPixelFormat(deviceContext,letWindowsChooseThisPixelFormat, &pfd);
 
-	glContext = wglCreateContext(*deviceContext);
-	wglMakeCurrent(*deviceContext, glContext);
+	glContext = wglCreateContext(deviceContext);
+	wglMakeCurrent(deviceContext, glContext);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearDepth(1.0f);
+
+	// Turn on backface culling
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
+
+	// Turn on depth testing
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
+	// Send draw request
+	OnPaint();
 }
 
 void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 	auto oldDevContext = wglGetCurrentDC();
 	auto oldGLContext = wglGetCurrentContext();
 
-	auto devContext = GetDC();
-	wglMakeCurrent(*devContext, glContext);
+	auto currentDeviceContext = GetDC();
+
+	wglMakeCurrent(*currentDeviceContext, glContext);
 
 	// 	VI_Camera camera;
 	// 	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
@@ -127,11 +136,20 @@ void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 
 
 
-	bool isOk = SwapBuffers(*devContext);
+	bool isOk = SwapBuffers(*currentDeviceContext);
 	if (!isOk) {
 		fprintf(stderr, "%u\n", GetLastError());
 	}
 
-	ReleaseDC(devContext);
+	ReleaseDC(currentDeviceContext);
 	wglMakeCurrent(oldDevContext, oldGLContext);
+}
+
+void EnVistasWnd::SetWindowSize(int width, int height) {
+	windowHeight = width;
+	windowHeight = height;
+}
+
+void EnVistasWnd::SetEnvContext(EnvContext* context) {
+	recentEnvContext = context;
 }
