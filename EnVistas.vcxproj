@@ -209,6 +209,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="envision_vistas_window.cpp" />
     <ClCompile Include="EnVistas.cpp" />
     <ClCompile Include="EnVistasGeometryPlugin.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -220,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\EnvExtension.h" />
+    <ClInclude Include="envision_vistas_window.h" />
     <ClInclude Include="EnVistas.h" />
     <ClInclude Include="EnVistasGeometryPlugin.h" />
     <ClInclude Include="Resource.h" />

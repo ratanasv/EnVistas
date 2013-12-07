@@ -6,10 +6,9 @@
 #pragma hdrstop
 
 #include "EnVistas.h"
-#include <gl/GL.h>
-#include <gl/GLU.h>
 #include <cassert>
-
+#include <stdexcept>
+#include "EnVistasGeometryPlugin.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -20,139 +19,6 @@ static char THIS_FILE[] = __FILE__;
 extern EnVistas *theViz;
 
 //*********************************************************
-
-IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
-
-const float margin = 0.1f;
-
-/////////////////////////////////////////////////////////////////////////////
-// EnVistasWnd
-
-EnVistasWnd::EnVistasWnd( void ): CWnd(), m_currentYear( -1 ), 
-	m_currentRun( -1 ), m_useCurrent( true ) {
-	m_activated = false;
-}
-
-BEGIN_MESSAGE_MAP(EnVistasWnd, CWnd)
-	//{{AFX_MSG_MAP(EnVistasWnd)
-	ON_WM_PAINT()
-	ON_WM_CREATE()
-	ON_WM_LBUTTONDBLCLK()
-	ON_WM_SIZE()
-	ON_WM_MOUSEMOVE()
-END_MESSAGE_MAP()
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Map message handlers
-
-void EnVistasWnd::OnPaint() {
-	
-}
-
-
-int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
-	if (CWnd::OnCreate(lpCreateStruct) == -1)
-		return -1;
-	CreateWinGLContext();
-
-	// Window is created, set it up for VISTAS
-	// TODO: 
-	bool isOk = VI_Init3D();
-	assert(isOk);
-
-	return 0;
-}
-
-
-void EnVistasWnd::OnLButtonDblClk(UINT nFlags, CPoint point) {
-
-}
-
-
-
-
-void EnVistasWnd::OnSize(UINT nType, int cx, int cy) {
-	CWnd::OnSize(nType, cx, cy);
-
-	//invalidate so paint will be called
-	Invalidate();
-}
-
-
-void EnVistasWnd::OnMouseMove( UINT nFlags, CPoint point) {
-
-	CWnd::OnMouseMove(nFlags, point);
-}
-
-void EnVistasWnd::CreateWinGLContext() {
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),
-		1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,    //Flags
-		PFD_TYPE_RGBA,            //The kind of framebuffer. RGBA or palette.
-		32,                        //Colordepth of the framebuffer.
-		0, 0, 0, 0, 0, 0,
-		0,
-		0,
-		0,
-		0, 0, 0, 0,
-		24,                        //Number of bits for the depthbuffer
-		8,                        //Number of bits for the stencilbuffer
-		0,                        //Number of Aux buffers in the framebuffer.
-		PFD_MAIN_PLANE,
-		0,
-		0, 0, 0
-	};
-
-	auto deviceContext = GetDC();
-
-	int  letWindowsChooseThisPixelFormat;
-	letWindowsChooseThisPixelFormat = ChoosePixelFormat(*deviceContext, &pfd); 
-	SetPixelFormat(*deviceContext,letWindowsChooseThisPixelFormat, &pfd);
-
-	glContext = wglCreateContext(*deviceContext);
-	wglMakeCurrent(*deviceContext, glContext);
-}
-
-void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
-	auto oldDevContext = wglGetCurrentDC();
-	auto oldGLContext = wglGetCurrentContext();
-
-	auto devContext = GetDC();
-	wglMakeCurrent(*devContext, glContext);
-
-// 	VI_Camera camera;
-// 	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
-// 	camera.Render(width, height);
-	glViewport(0,0,width,height);
-	glMatrixMode(GL_PROJECTION);
-	gluOrtho2D(-1.,1.,-1.,1.);
-	glMatrixMode(GL_MODELVIEW);
-	glClearColor(0.,0.,0.,1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glBegin(GL_QUADS);
-	glColor3f(1.0,0.0,0.0);
-	glVertex2f(-0.8,-0.8);
-	glColor3f(0.0,1.0,0.0);
-	glVertex2f( 0.8,-0.8);
-	glColor3f(0.0,0.0,1.0);
-	glVertex2f( 0.8, 0.8);
-	glColor3f(1.0,1.0,1.0);
-	glVertex2f(-0.8, 0.8);
-	glEnd();
-
-
-
-	bool isOk = SwapBuffers(*devContext);
-	if (!isOk) {
-		fprintf(stderr, "%u\n", GetLastError());
-	}
-
-	ReleaseDC(devContext);
-	wglMakeCurrent(oldDevContext, oldGLContext);
-}
 
 
 ///////////////////////////////////////////////////////////////
@@ -207,12 +73,19 @@ BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
 }
 
 
-BOOL EnVistas::UpdateWindow( EnvContext *pContext, HWND hParent ) {
-	EnVistasWnd *pWnd = NULL;
+BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
+	EnVistasWnd* pWnd = NULL;
 
 	BOOL found = m_hwndToEnVistasWndMap.Lookup( hParent, pWnd );
-	if ( ! found )
+	if (!found) {
 		return FALSE;
+	}
+	auto potentialMatch = parentToEnVistasWindow.find(hParent);
+	if (potentialMatch == parentToEnVistasWindow.end()) {
+		return false;
+	} else {
+		pWnd = potentialMatch->second;
+	}
 
 	// have window, interpret pContext to determine correct
 	// drawing.
@@ -250,18 +123,19 @@ BOOL EnVistas::UpdateWindow( EnvContext *pContext, HWND hParent ) {
 } 
 
 
-EnVistasWnd *EnVistas::AddWindow( CWnd *pParent ) {
+EnVistasWnd* EnVistas::AddWindow(CWnd* parentWindowObject) {
 	RECT rect;
-	pParent->GetClientRect( &rect );
+	parentWindowObject->GetClientRect( &rect );
 
-	EnVistasWnd *pWnd = new EnVistasWnd;
+	EnVistasWnd* windowObject = new EnVistasWnd();
+	windowObject->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
+		rect, parentWindowObject, m_nextID++ );
 
-	pWnd->Create( NULL, "EnVistasWnd", WS_CHILD | WS_VISIBLE | WS_BORDER, rect, pParent, m_nextID++ );
+	m_wndArray.Add( windowObject );
+	m_hwndToEnVistasWndMap.SetAt(parentWindowObject->GetSafeHwnd(), windowObject);
+	parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = windowObject;
 
-	m_wndArray.Add( pWnd );
-	m_hwndToEnVistasWndMap.SetAt( pParent->GetSafeHwnd(), pWnd );
-
-	return pWnd;
+	return windowObject;
 }
 
 

@@ -2,49 +2,12 @@
 
 #include <EnvExtension.h>
 #include <PtrArray.h>
-#include "EnVistasGeometryPlugin.h"
 #include <memory>
-//#include <FDataObj.h>
+#include "envision_vistas_window.h"
+#include <FDataObj.h>
 
 using std::shared_ptr;
-
-
-// Basic idea - Create a window that 
-
-class EnVistasWnd : public CWnd {
-	DECLARE_DYNCREATE( EnVistasWnd )
-	// Construction
-public:
-	EnVistasWnd();
-	~EnVistasWnd() { }
-
-	int m_currentRun;
-	int m_currentYear;
-	bool m_useCurrent;
-protected:
-	bool   m_activated;
-	HGLRC glContext;
-
-	// Generated message map functions
-protected:
-	//{{AFX_MSG(Map)
-	afx_msg void OnPaint();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-
-	void CreateWinGLContext();
-
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-
-	//}}AFX_MSG
-	DECLARE_MESSAGE_MAP()
-public:
-
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	void Paint(int width, int height, EnvContext* envContext);
-};
-
-
+class VI_ShapeDataPlugin;
 
 class EnVistas : public EnvVisualizer
 {
@@ -57,6 +20,7 @@ public:
 
    PtrArray< EnVistasWnd > m_wndArray;
    CMap< HWND, HWND, EnVistasWnd*, EnVistasWnd* > m_hwndToEnVistasWndMap;
+   map<HWND, EnVistasWnd*> parentToEnVistasWindow;
 
    // other data
    int  m_nextID;
@@ -69,8 +33,9 @@ public:
    virtual BOOL InitWindow( EnvContext*, HWND );
    virtual BOOL UpdateWindow( EnvContext*, HWND );
    
+private:
    // other methods
-   EnVistasWnd *AddWindow( CWnd *pParent );
+   EnVistasWnd* AddWindow( CWnd* pParent );
 
    // persistent data storage (one data object per run)
    //PtrArray< RUNDATA > m_runDataArray;

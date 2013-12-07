@@ -39,6 +39,9 @@
     <ClCompile Include="EnVistasGeometryPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="envision_vistas_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnVistasGeometryPlugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="envision_vistas_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
