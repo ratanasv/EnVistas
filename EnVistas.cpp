@@ -8,7 +8,7 @@
 #include "EnVistas.h"
 #include <cassert>
 #include <stdexcept>
-#include "EnVistasGeometryPlugin.h"
+
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -26,13 +26,7 @@ extern EnVistas *theViz;
 ///////////////////////////////////////////////////////////////
 
 BOOL EnVistas::Init( EnvContext *pContext, LPCTSTR initStr ) {
-	//
 	
-	// 1) create a shape provider for Vistas
-	m_pGeometryPlugin.reset(new EnVistasGeometryPlugin( pContext->pMapLayer ));
-	auto shapeArray = m_pGeometryPlugin->GetShapeArray();
-	
-
 	// something similar for data
 	return TRUE;
 }  
@@ -59,9 +53,8 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 
 
 BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
-	CWnd *pParent = pContext->pWnd;
-
-	EnVistasWnd *pWnd = AddWindow( pParent );   // adds and creates a window;
+	CWnd* pParent = pContext->pWnd;
+	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
 
 	pWnd->m_useCurrent = true;
 	pWnd->m_currentYear = pContext->currentYear;
@@ -98,17 +91,18 @@ BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	pWnd->MoveWindow( &rect, FALSE );
 
 	pWnd->SetWindowSize(rect.right, rect.bottom);
-	pWnd->Paint(rect.right, rect.bottom, pContext);
+	pWnd->SetEnvContext(pContext);
 
 	return TRUE; 
 } 
 
 
-EnVistasWnd* EnVistas::AddWindow(CWnd* parentWindowObject) {
+EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject) 
+{
 	RECT rect;
 	parentWindowObject->GetClientRect( &rect );
 
-	EnVistasWnd* windowObject = new EnVistasWnd(rect.right, rect.bottom);
+	EnVistasWnd* windowObject = new EnVistasWnd(context, rect.right, rect.bottom);
 	windowObject->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
 		rect, parentWindowObject, m_nextID++ );
 

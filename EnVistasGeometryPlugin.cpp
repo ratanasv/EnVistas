@@ -67,11 +67,16 @@ VI_TemporalInfo EnVistasGeometryPlugin::GetTemporalInfo() {
 }
 
 VI_StringList EnVistasGeometryPlugin::GetAttributes() {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	const int numColumns = mapLayer->GetColCount();
+	list<VI_String> attributes;
+	for (int i=0; i<numColumns; i++) {
+		attributes.push_back(VI_String(mapLayer->GetFieldLabel(i)));
+	}
+	return attributes;
 }
 
 VI_String EnVistasGeometryPlugin::GetAttributeLabel( const VI_String& attribute ) {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	return attribute;
 }
 
 VI_AttributeStats EnVistasGeometryPlugin::GetAttributeStats( const VI_String& attribute ) {
@@ -91,7 +96,7 @@ bool EnVistasGeometryPlugin::ValuesAreTemporal() {
 }
 
 int EnVistasGeometryPlugin::GetNumShapes() {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	return mapLayer->m_pPolyArray->GetCount();
 }
 
 VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
@@ -131,7 +136,15 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 	return VI_DataRefBase<VI_Shape>(shapeArray.data(), sizeof(VI_Shape)*numShapes, true);
 }
 
-std::map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( const VI_String& attribute ) {
+std::map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( 
+	const VI_String& attribute ) 
+{
+	const int numColumns = mapLayer->GetColCount();
+	for (int i=0; i<numColumns; i++) {
+		auto bin = mapLayer->GetBinArray(i, false)->GetAt(0);
+		bin = mapLayer->GetBin(i, 1);
+	}
+
 	throw NOT_YET_IMPLEMENTED_ERROR;
 }
 

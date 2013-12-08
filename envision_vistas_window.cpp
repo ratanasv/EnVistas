@@ -2,7 +2,7 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "envision_vistas_window.h"
-#include "EnVistasGeometryPlugin.h"
+#include "envcontext_processor.h"
 
 IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 
@@ -11,9 +11,12 @@ IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 /////////////////////////////////////////////////////////////////////////////
 // EnVistasWnd
 
-EnVistasWnd::EnVistasWnd(const int width, const int height): m_currentYear( -1 ), 
-	m_currentRun( -1 ), m_useCurrent( true ), m_activated(false), recentEnvContext(NULL), 
-	windowWidth(width), windowHeight(height) {}; 
+EnVistasWnd::EnVistasWnd(EnvContext* context, const int width, const int height) : 
+	m_currentYear( -1 ), m_currentRun( -1 ), m_useCurrent( true ), m_activated(false), 
+	_recentEnvContext(context), _windowWidth(width), _windowHeight(height)
+{
+
+}; 
 
 BEGIN_MESSAGE_MAP(EnVistasWnd, CWnd)
 	//{{AFX_MSG_MAP(EnVistasWnd)
@@ -29,7 +32,23 @@ END_MESSAGE_MAP()
 // Map message handlers
 
 void EnVistasWnd::OnPaint() {
-	Paint(windowWidth, windowHeight, recentEnvContext);
+	auto oldDevContext = wglGetCurrentDC();
+	auto oldGLContext = wglGetCurrentContext();
+
+	auto currentDeviceContext = GetDC();
+
+	wglMakeCurrent(*currentDeviceContext, _glContext);
+	
+	Paint(_windowWidth, _windowHeight, _recentEnvContext);
+
+
+	bool isOk = SwapBuffers(*currentDeviceContext);
+	if (!isOk) {
+		fprintf(stderr, "%u\n", GetLastError());
+	}
+
+	ReleaseDC(currentDeviceContext);
+	wglMakeCurrent(oldDevContext, oldGLContext);
 }
 
 
@@ -38,11 +57,12 @@ int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 		return -1;
 	CreateWinGLContext();
 
-	// Window is created, set it up for VISTAS
-	// TODO: 
 	bool isOk = VI_Init3D();
 	assert(isOk);
-
+	if (_recentEnvContext != NULL) {
+		//must be called after glewInit since it internally makes gl calls.
+		_processor.reset(new SHP3DProcessor(_recentEnvContext));
+	}
 	return 0;
 }
 
@@ -87,8 +107,8 @@ void EnVistasWnd::CreateWinGLContext() {
 	letWindowsChooseThisPixelFormat = ChoosePixelFormat(deviceContext, &pfd); 
 	SetPixelFormat(deviceContext,letWindowsChooseThisPixelFormat, &pfd);
 
-	glContext = wglCreateContext(deviceContext);
-	wglMakeCurrent(deviceContext, glContext);
+	_glContext = wglCreateContext(deviceContext);
+	wglMakeCurrent(deviceContext, _glContext);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClearDepth(1.0f);
@@ -100,22 +120,16 @@ void EnVistasWnd::CreateWinGLContext() {
 	// Turn on depth testing
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
-
-	// Send draw request
-	OnPaint();
 }
 
 void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
-	auto oldDevContext = wglGetCurrentDC();
-	auto oldGLContext = wglGetCurrentContext();
 
-	auto currentDeviceContext = GetDC();
+	
+	if (_processor->DoesNeedUpdate(envContext)) {
+		_processor->UpdateScene(_camera.GetScene());
+	}
+	_camera.Render(width, height);
 
-	wglMakeCurrent(*currentDeviceContext, glContext);
-
-	// 	VI_Camera camera;
-	// 	camera.GetScene().AddObject(VI_MeshRenderable::Cube());
-	// 	camera.Render(width, height);
 	glViewport(0,0,width,height);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(-1.,1.,-1.,1.);
@@ -134,22 +148,13 @@ void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 	glVertex2f(-0.8, 0.8);
 	glEnd();
 
-
-
-	bool isOk = SwapBuffers(*currentDeviceContext);
-	if (!isOk) {
-		fprintf(stderr, "%u\n", GetLastError());
-	}
-
-	ReleaseDC(currentDeviceContext);
-	wglMakeCurrent(oldDevContext, oldGLContext);
 }
 
 void EnVistasWnd::SetWindowSize(int width, int height) {
-	windowHeight = width;
-	windowHeight = height;
+	_windowHeight = width;
+	_windowHeight = height;
 }
 
 void EnVistasWnd::SetEnvContext(EnvContext* context) {
-	recentEnvContext = context;
+	_recentEnvContext = context;
 }

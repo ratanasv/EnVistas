@@ -7,7 +7,6 @@
 #include <FDataObj.h>
 
 using std::shared_ptr;
-class VI_ShapeDataPlugin;
 
 class EnVistas : public EnvVisualizer
 {
@@ -35,7 +34,7 @@ public:
    
 private:
    // other methods
-   EnVistasWnd* AddWindow( CWnd* pParent );
+   EnVistasWnd* AddWindow(EnvContext* context, CWnd* pParent);
 
    // persistent data storage (one data object per run)
    //PtrArray< RUNDATA > m_runDataArray;
@@ -43,11 +42,6 @@ private:
 
    int m_currentRun;
    int m_currentYear;    // zero-based!!! not
-
-   // VISTAS interface
-   shared_ptr<VI_ShapeDataPlugin> m_pGeometryPlugin;
-   //EnVistasTablePlugin    *m_pTablePlugin;
-   //SHP3D                  *m_pShp3D;
 
 };
 
