@@ -7,6 +7,7 @@
 
 using std::vector;
 using std::logic_error;
+using std::map;
 
 // this is the most ridiculous build error...
 wxEvtHandler::wxEvtHandler(const wxEvtHandler&) { }
@@ -136,16 +137,24 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 	return VI_DataRefBase<VI_Shape>(shapeArray.data(), sizeof(VI_Shape)*numShapes, true);
 }
 
-std::map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( 
+VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
+	const auto& colorRef = bin.m_color;
+	return VI_Color((int)GetRValue(colorRef), (int)GetGValue(colorRef), 
+		(int)GetBValue(colorRef));
+}
+
+map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( 
 	const VI_String& attribute ) 
 {
-	const int numColumns = mapLayer->GetColCount();
-	for (int i=0; i<numColumns; i++) {
-		auto bin = mapLayer->GetBinArray(i, false)->GetAt(0);
-		bin = mapLayer->GetBin(i, 1);
+	map<VI_ImmutableAbstract, VI_Color> result;
+	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
+	for (int i=0; i<numBin; i++) {
+		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		auto color = ConvertToColor(bin);
+		result[VI_ImmutableAbstract(bin.m_minVal)] = color;
 	}
-
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	return result;
 }
 
 std::map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap( const VI_String& attribute ) {

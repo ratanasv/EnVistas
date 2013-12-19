@@ -3,6 +3,7 @@
 #include <vistas/vistas.h>
 
 class MapLayer;
+class Bin;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
@@ -54,5 +55,5 @@ public:
 
 private:
 	const MapLayer* mapLayer;
-
+	VI_Color ConvertToColor(const Bin& bin) const;
 };
