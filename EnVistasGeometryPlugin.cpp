@@ -8,6 +8,7 @@
 using std::vector;
 using std::logic_error;
 using std::map;
+using std::shared_ptr;
 
 // this is the most ridiculous build error...
 wxEvtHandler::wxEvtHandler(const wxEvtHandler&) { }
@@ -48,7 +49,10 @@ VI_String EnVistasGeometryPlugin::GetDataName() {
 }
 
 VI_Path EnVistasGeometryPlugin::GetPath() {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	char pathBuffer[128];
+	lstrcpy(pathBuffer, mapLayer->m_path);
+	VI_Path result(pathBuffer);
+	return result.GetDirectory();
 }
 
 long EnVistasGeometryPlugin::GetDiskSize() {
@@ -157,12 +161,30 @@ map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap(
 	return result;
 }
 
-std::map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap( const VI_String& attribute ) {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap( 
+	const VI_String& attribute) 
+{
+	map<VI_ImmutableAbstract, VI_String> result;
+	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
+	for (int i=0; i<numBin; i++) {
+		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		result[VI_ImmutableAbstract(bin.m_minVal)] = VI_String(bin.m_label);
+	}
+	return result;
 }
 
-std::shared_ptr<std::vector<VI_ImmutableAbstract> > EnVistasGeometryPlugin::ObtainValues( const VI_String& attribute ) {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::ObtainValues( 
+	const VI_String& attribute) 
+{
+	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
+	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
+	for (int i=0; i<numBin; i++) {
+		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		result->push_back(VI_ImmutableAbstract(bin.m_minVal));
+	}
+	return result;
 }
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeFromXML( const VI_String& attribute ) {
