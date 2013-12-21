@@ -7,6 +7,7 @@
 
 using std::vector;
 using std::logic_error;
+using std::runtime_error;
 using std::map;
 using std::shared_ptr;
 
@@ -107,7 +108,7 @@ int EnVistasGeometryPlugin::GetNumShapes() {
 VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 	auto polyArray = mapLayer->m_pPolyArray;
 	unsigned numShapes = polyArray->GetCount();
-	vector<VI_Shape> shapeArray(numShapes);
+	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
 	for (unsigned i=0; i<numShapes; i++) {
 		auto shape = polyArray->ElementAt(i);
 		CDWordArray& parts = shape->m_vertexPartArray;
@@ -115,30 +116,26 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
  		VertexArray& vertices = shape->m_vertexArray;
 		auto numVerts = vertices.GetCount();
 
-		shapeArray[i].ShapeHeader.numparts = numParts;
-		shapeArray[i].ShapeHeader.numpoints = numVerts;
-		shapeArray[i].ShapeHeader.xmax = shape->m_xMax;
-		shapeArray[i].ShapeHeader.xmin = shape->m_xMin;
-		shapeArray[i].ShapeHeader.ymin = shape->m_yMin;
-		shapeArray[i].ShapeHeader.ymax = shape->m_yMax;
-		shapeArray[i].ShapeHeader.zmin = -1.0;
-		shapeArray[i].ShapeHeader.zmax = 1.0;
-		shapeArray[i].ShapeType = 15;
-		vector<int> partArray(numParts);
+		shapeArray->at(i).ShapeHeader.numparts = numParts;
+		shapeArray->at(i).ShapeHeader.numpoints = numVerts;
+		shapeArray->at(i).ShapeHeader.xmax = shape->m_xMax;
+		shapeArray->at(i).ShapeHeader.xmin = shape->m_xMin;
+		shapeArray->at(i).ShapeHeader.ymin = shape->m_yMin;
+		shapeArray->at(i).ShapeHeader.ymax = shape->m_yMax;
+		shapeArray->at(i).ShapeHeader.zmin = -1.0;
+		shapeArray->at(i).ShapeHeader.zmax = 1.0;
+		shapeArray->at(i).ShapeType = 15;
 		for (unsigned j=0; j<numParts; j++) {
-			partArray[j] = parts.ElementAt(j);
+			shapeArray->at(i).Parts.push_back(parts.ElementAt(j));
 		}
-		shapeArray[i].Parts = VI_DataRefBase<int>(partArray.data(), sizeof(int)*numParts, true);
-		vector<struct point3d> vertArray(numVerts);
+		shapeArray->at(i).Vertices.reset(new vector<struct point3d>(numVerts));
 		for (unsigned j=0; j<numVerts; j++) {
-			vertArray[j].x = vertices.ElementAt(j).x;
-			vertArray[j].y = vertices.ElementAt(j).y;
-			vertArray[j].z = vertices.ElementAt(j).z;
+			shapeArray->at(i).Vertices->at(j).x = vertices.ElementAt(j).x;
+			shapeArray->at(i).Vertices->at(j).y = vertices.ElementAt(j).y;
+			shapeArray->at(i).Vertices->at(j).z = vertices.ElementAt(j).z;
 		}
-		shapeArray[i].Vertices = VI_DataRefBase<struct point3d>(vertArray.data(), 
-			sizeof(struct point3d)*numVerts, true);
 	}
-	return VI_DataRefBase<VI_Shape>(shapeArray.data(), sizeof(VI_Shape)*numShapes, true);
+	return VI_ShapeArrayRef(shapeArray);
 }
 
 VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
@@ -188,11 +185,34 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::ObtainValues(
 }
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeFromXML( const VI_String& attribute ) {
-	throw NOT_YET_IMPLEMENTED_ERROR;
+	TYPE dataType = mapLayer->GetFieldType(USE_ACTIVE_COL);
+	switch(dataType) {
+	case TYPE_INT:
+	case TYPE_LONG:
+		return VI_Abstract::VALUE_TYPE_INT;
+	case TYPE_FLOAT:
+		return VI_Abstract::VALUE_TYPE_DOUBLE;
+	case TYPE_CHAR:
+		return VI_Abstract::VALUE_TYPE_STRING;
+	default:
+		throw runtime_error("Unsupported DataType");
+		break;
+	}
 }
 
 bool EnVistasGeometryPlugin::IsDataDiscrete( const VI_String& attribute ) {
-	throw METHOD_FOR_VISTAS_ERROR;
+	TYPE dataType = mapLayer->GetFieldType(USE_ACTIVE_COL);
+	switch(dataType) {
+	case TYPE_INT:
+	case TYPE_LONG:
+	case TYPE_CHAR:
+		return true;
+	case TYPE_FLOAT:
+		return false;
+	default:
+		throw runtime_error("Unsupported DataType");
+		break;
+	}
 }
 
 VI_ShapeDataPlugin::MinMaxColorArray EnVistasGeometryPlugin::GetMinMaxColorArray( const VI_String& attribute ) {
@@ -203,11 +223,27 @@ VI_ShapeDataPlugin::ColorLabelArray EnVistasGeometryPlugin::ObtainColorLabelArra
 	throw METHOD_FOR_VISTAS_ERROR;
 }
 
-shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArray( const VI_String& attribute ) {
-	throw std::exception("The method or operation is not implemented.");
+shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArray( 
+	const VI_String& attribute ) 
+{
+	auto dataType = GetAttributeDataType(attribute);
+	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
+	unsigned numShapes = GetNumShapes();
+	switch(dataType) {
+	case VI_Abstract::VALUE_TYPE_INT:
+		for (int i=0; i<numShapes; i++) {
+			int buffer;
+			mapLayer->GetData(i, mapLayer->m_activeField, buffer);
+			result->push_back(VI_ImmutableAbstract(buffer));
+		}
+		break;
+	default:
+		break;
+	}
+	return result;
 }
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI_String& attribute ) {
-	throw std::exception("The method or operation is not implemented.");
+	return GetDataTypeFromXML(attribute);
 }
 
