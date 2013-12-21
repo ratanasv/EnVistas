@@ -1,6 +1,7 @@
 #include <stdafx.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
+
 #include "envision_vistas_window.h"
 #include "envcontext_processor.h"
 
@@ -32,6 +33,7 @@ END_MESSAGE_MAP()
 // Map message handlers
 
 void EnVistasWnd::OnPaint() {
+	gEvtMgr->DispatchAll();
 	auto oldDevContext = wglGetCurrentDC();
 	auto oldGLContext = wglGetCurrentContext();
 
@@ -129,7 +131,6 @@ void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 		_processor->UpdateScene(_camera.GetScene());
 	}
 	_camera.Render(width, height);
-
 	glViewport(0,0,width,height);
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(-1.,1.,-1.,1.);
