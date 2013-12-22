@@ -40,6 +40,6 @@ bool SHP3DProcessor::DoesNeedUpdate(const EnvContext* context) {
 }
 
 void SHP3DProcessor::UpdateScene(VI_Scene& scene) {
-	throw std::exception("The method or operation is not implemented.");
+	_vizPlugin->SetScene(scene);
 }
 

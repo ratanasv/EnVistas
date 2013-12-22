@@ -64,6 +64,13 @@ int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 	if (_recentEnvContext != NULL) {
 		//must be called after glewInit since it internally makes gl calls.
 		_processor.reset(new SHP3DProcessor(_recentEnvContext));
+		_processor->UpdateScene(_camera.GetScene());
+		_camera.SetPosition(VI_Vector3(0.0, 100.0, 50.0));
+		assert(_camera.GetMatrix()->IsValid());
+		_camera.SetPointOfInterest(VI_Vector3(0.0, 0.0, 0.0));
+		assert(_camera.GetMatrix()->IsValid());
+		_camera.SetUpVector(VI_Vector3(0.0, 0.0, -1.0));
+		assert(_camera.GetMatrix()->IsValid());
 	}
 	return 0;
 }
@@ -131,23 +138,23 @@ void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
 		_processor->UpdateScene(_camera.GetScene());
 	}
 	_camera.Render(width, height);
-	glViewport(0,0,width,height);
-	glMatrixMode(GL_PROJECTION);
-	gluOrtho2D(-1.,1.,-1.,1.);
-	glMatrixMode(GL_MODELVIEW);
-	glClearColor(0.,0.,0.,1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glBegin(GL_QUADS);
-	glColor3f(1.0,0.0,0.0);
-	glVertex2f(-0.8,-0.8);
-	glColor3f(0.0,1.0,0.0);
-	glVertex2f( 0.8,-0.8);
-	glColor3f(0.0,0.0,1.0);
-	glVertex2f( 0.8, 0.8);
-	glColor3f(1.0,1.0,1.0);
-	glVertex2f(-0.8, 0.8);
-	glEnd();
+// 	glViewport(0,0,width,height);
+// 	glMatrixMode(GL_PROJECTION);
+// 	gluOrtho2D(-1.,1.,-1.,1.);
+// 	glMatrixMode(GL_MODELVIEW);
+// 	glClearColor(0.,0.,0.,1.0);
+// 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// 
+// 	glBegin(GL_QUADS);
+// 	glColor3f(1.0,0.0,0.0);
+// 	glVertex2f(-0.8,-0.8);
+// 	glColor3f(0.0,1.0,0.0);
+// 	glVertex2f( 0.8,-0.8);
+// 	glColor3f(0.0,0.0,1.0);
+// 	glVertex2f( 0.8, 0.8);
+// 	glColor3f(1.0,1.0,1.0);
+// 	glVertex2f(-0.8, 0.8);
+// 	glEnd();
 
 }
 
