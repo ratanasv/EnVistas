@@ -135,7 +135,9 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 			shapeArray->at(i).Vertices->at(j).z = vertices.ElementAt(j).z;
 		}
 	}
-	return VI_ShapeArrayRef(shapeArray);
+	VI_ShapeArrayRef shapeArrayRef(shapeArray);
+	shapeArrayRef.SetShpMainHeader(GetShpMainHeader());
+	return shapeArrayRef;
 }
 
 VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
@@ -245,5 +247,30 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI_String& attribute ) {
 	return GetDataTypeFromXML(attribute);
+}
+
+struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
+	struct shpmainheader Returned;
+	Returned.filecode = -1;
+	Returned.filelength = -1;
+	Returned.mmax = -1;
+	Returned.mmin = -1;
+	Returned.pad = -1;
+	Returned.shapetype = 15;
+	Returned.unused0 = -1;
+	Returned.unused1 = -1;
+	Returned.unused2 = -1;
+	Returned.unused3 = -1;
+	Returned.unused4 = -1;
+	Returned.version = -1;
+	float xmin, xmax, ymin, ymax;
+	mapLayer->GetExtents(xmin, xmax, ymin, ymax);
+	Returned.xmin = xmin;
+	Returned.ymin = ymin;
+	Returned.zmin = -1.0;
+	Returned.xmax = xmax;
+	Returned.ymax = ymax;
+	Returned.zmax = 1.0;
+	return Returned;
 }
 

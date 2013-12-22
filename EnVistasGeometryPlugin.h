@@ -56,4 +56,5 @@ public:
 private:
 	const MapLayer* mapLayer;
 	VI_Color ConvertToColor(const Bin& bin) const;
+	struct shpmainheader GetShpMainHeader() const;
 };
