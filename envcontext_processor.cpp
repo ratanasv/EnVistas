@@ -40,6 +40,7 @@ bool SHP3DProcessor::DoesNeedUpdate(const EnvContext* context) {
 }
 
 void SHP3DProcessor::UpdateScene(VI_Scene& scene) {
+	scene.RemoveAllObjects();
 	_vizPlugin->SetScene(scene);
 }
 
