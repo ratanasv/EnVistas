@@ -14,10 +14,11 @@ IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 
 EnVistasWnd::EnVistasWnd(EnvContext* context, const int width, const int height) : 
 	m_currentYear( -1 ), m_currentRun( -1 ), m_useCurrent( true ), m_activated(false), 
-	_recentEnvContext(context), _windowWidth(width), _windowHeight(height)
+	_recentEnvContext(context), _windowWidth(width), _windowHeight(height),
+	_camera(new VI_Camera()),
+	_cameraInteractor(new VI_SphereInteractor(_camera, _camera->GetScene()))
 {
-	_camera.reset(new VI_Camera());
-	_cameraInteractor.reset(new VI_SphereInteractor(_camera, _camera->GetScene()));
+
 }; 
 
 BEGIN_MESSAGE_MAP(EnVistasWnd, CWnd)

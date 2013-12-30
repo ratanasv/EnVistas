@@ -50,8 +50,8 @@ private:
 	int _windowWidth;
 	int _windowHeight;
 	EnvContext* _recentEnvContext;
-	VI_Camera_Ptr _camera;
-	VI_CameraInteractor_Ptr _cameraInteractor;
+	const shared_ptr<VI_Camera> _camera;
+	const shared_ptr<VI_CameraInteractor> _cameraInteractor;
 	shared_ptr<ENVContextProcessor> _processor;
 	float _lastX;
 	float _lastY;
