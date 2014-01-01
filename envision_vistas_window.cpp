@@ -94,12 +94,18 @@ void EnVistasWnd::OnSize(UINT nType, int cx, int cy) {
 
 
 void EnVistasWnd::OnMouseMove( UINT nFlags, CPoint point) {
-	bool isShiftDown = nFlags == VK_SHIFT;
-	bool isCtrlDown = nFlags == VK_CONTROL;
-	bool isAltDown = nFlags == VK_MENU;
+	bool isShiftDown = (nFlags & MK_SHIFT) ? true : false;
+	bool isCtrlDown = (nFlags & MK_CONTROL) ? true : false;
+	bool isAltDown = false;
+	bool isLeftDown = (nFlags & MK_LBUTTON) ? true : false;
 	CWnd::OnMouseMove(nFlags, point);
-	_cameraInteractor->MouseLeftDown(isShiftDown, isAltDown, isCtrlDown);
-	if (point.x > -1 && point.y > -1) {
+	if (isLeftDown) {
+		_cameraInteractor->MouseLeftDown(isShiftDown, isAltDown, isCtrlDown);
+	} else {
+		_cameraInteractor->MouseLeftUp(isShiftDown, isAltDown, isCtrlDown);
+	}
+	
+	if (isLeftDown && point.x > -1 && point.y > -1) {
 		_cameraInteractor->MouseMotion(point.x - _lastX, point.y - _lastY, isShiftDown, 
 			isAltDown, isCtrlDown);
 	}
