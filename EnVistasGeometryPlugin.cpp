@@ -122,8 +122,10 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 		shapeArray->at(i).ShapeHeader.xmin = shape->m_xMin;
 		shapeArray->at(i).ShapeHeader.ymin = shape->m_yMin;
 		shapeArray->at(i).ShapeHeader.ymax = shape->m_yMax;
-		shapeArray->at(i).ShapeHeader.zmin = -1.0;
-		shapeArray->at(i).ShapeHeader.zmax = 1.0;
+		float zmin, zmax;
+		shape->GetBoundingZ(zmin, zmax);
+		shapeArray->at(i).ShapeHeader.zmin = zmin;
+		shapeArray->at(i).ShapeHeader.zmax = zmax;
 		shapeArray->at(i).ShapeType = 15;
 		for (unsigned j=0; j<numParts; j++) {
 			shapeArray->at(i).Parts.push_back(parts.ElementAt(j));
@@ -263,14 +265,15 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 	Returned.unused3 = -1;
 	Returned.unused4 = -1;
 	Returned.version = -1;
-	float xmin, xmax, ymin, ymax;
+	float xmin, xmax, ymin, ymax, zmin, zmax;
 	mapLayer->GetExtents(xmin, xmax, ymin, ymax);
+	const_cast<MapLayer*>(mapLayer)->GetZExtents(zmin, zmax);
 	Returned.xmin = xmin;
 	Returned.ymin = ymin;
-	Returned.zmin = -1.0;
+	Returned.zmin = zmin;
 	Returned.xmax = xmax;
 	Returned.ymax = ymax;
-	Returned.zmax = 1.0;
+	Returned.zmax = zmax;
 	return Returned;
 }
 
