@@ -1,10 +1,13 @@
 #include "stdafx.h"
 #include "envcontext_processor.h"
 #include "EnVistasGeometryPlugin.h"
+#include <Maplayer.h>
 #include "SHP3D.h"
 #include <cstring>
+#include <thread>
 
 using std::string;
+using std::thread;
 
 static const string shp3dRegisterName("vip_core_shpviewer");
 static const string shp3dPath("E:/Vault/envision_source/x64/Debug/shp3d.dll");
@@ -21,26 +24,27 @@ static shared_ptr<VI_VizPlugin3D> LoadSHP3DDLL(const VI_Path& path) {
 	return shared_ptr<VI_VizPlugin3D>(shp3dPlugin);
 }
 
-SHP3DProcessor::SHP3DProcessor(const EnvContext* context) : _envContext(context) {
+SHP3DProcessor::SHP3DProcessor(const EnvContext* context, VI_Scene& scene) : 
+	_envContext(context), _scene(scene), _lastActiveField(-1)
+{
+
 	_dataPlugin.reset(new EnVistasGeometryPlugin(context->pMapLayer));
 	VI_Path path(shp3dPath);
 	assert(path.Exists());
 	_vizPlugin = LoadSHP3DDLL(path);
-	const int irrelevant = 0;
-	_vizPlugin->SetData(_dataPlugin.get(), irrelevant);
+	thread task(*this);
+	task.detach();
 }
 
-
-bool SHP3DProcessor::DoesNeedUpdate(const EnvContext* context) {
-	if (_envContext == context) {
-		return false;
-	} else {
-		return true;
+void SHP3DProcessor::operator()() {
+	while (true) {
+		if (_envContext->pMapLayer->m_activeField != _lastActiveField) {
+			_lastActiveField = _envContext->pMapLayer->m_activeField;
+			const int irrelevant = 0;
+			_vizPlugin->SetData(_dataPlugin.get(), irrelevant);
+			_scene.RemoveAllObjects();
+			_vizPlugin->SetScene(_scene);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
 }
-
-void SHP3DProcessor::UpdateScene(VI_Scene& scene) {
-	scene.RemoveAllObjects();
-	_vizPlugin->SetScene(scene);
-}
-

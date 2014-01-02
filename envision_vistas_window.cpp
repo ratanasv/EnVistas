@@ -65,8 +65,7 @@ int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 	assert(isOk);
 	if (_recentEnvContext != NULL) {
 		//must be called after glewInit since it internally makes gl calls.
-		_processor.reset(new SHP3DProcessor(_recentEnvContext));
-		_processor->UpdateScene(_camera->GetScene());
+		_processor.reset(new SHP3DProcessor(_recentEnvContext, _camera->GetScene()));
 		_camera->SetPosition(VI_Vector3(0.0, 100.0, 50.0));
 		assert(_camera->GetMatrix()->IsValid());
 		_camera->SetPointOfInterest(VI_Vector3(0.0, 0.0, 0.0));
@@ -149,11 +148,6 @@ void EnVistasWnd::CreateWinGLContext() {
 }
 
 void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
-
-	
-	if (_processor->DoesNeedUpdate(envContext)) {
-		_processor->UpdateScene(_camera->GetScene());
-	}
 	_camera->Render(width, height);
 }
 
