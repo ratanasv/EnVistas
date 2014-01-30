@@ -42,7 +42,7 @@ protected:
 public:
 
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	void Paint(int width, int height, EnvContext* envContext);
+	void Paint(int width, int height);
 	void SetWindowSize(int width, int height);
 	void SetEnvContext(EnvContext* context);
 private:

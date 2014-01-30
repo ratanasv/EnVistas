@@ -43,7 +43,7 @@ void EnVistasWnd::OnPaint() {
 
 	wglMakeCurrent(*currentDeviceContext, _glContext);
 	
-	Paint(_windowWidth, _windowHeight, _recentEnvContext);
+	Paint(_windowWidth, _windowHeight);
 
 
 	bool isOk = SwapBuffers(*currentDeviceContext);
@@ -63,16 +63,9 @@ int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 
 	bool isOk = VI_Init3D();
 	assert(isOk);
-	if (_recentEnvContext != NULL) {
-		//must be called after glewInit since it internally makes gl calls.
-		_processor.reset(new SHP3DProcessor(_recentEnvContext, _camera->GetScene()));
-		_camera->SetPosition(VI_Vector3(0.0, 100.0, 50.0));
-		assert(_camera->GetMatrix()->IsValid());
-		_camera->SetPointOfInterest(VI_Vector3(0.0, 0.0, 0.0));
-		assert(_camera->GetMatrix()->IsValid());
-		_camera->SetUpVector(VI_Vector3(0.0, 0.0, -1.0));
-		assert(_camera->GetMatrix()->IsValid());
-	}
+	//must be called after glewInit since it internally makes gl calls.
+	_processor.reset(new SHP3DProcessor(_recentEnvContext, _camera->GetScene()));
+	
 	return 0;
 }
 
@@ -126,7 +119,7 @@ void EnVistasWnd::CreateWinGLContext() {
 		PFD_MAIN_PLANE, 0, 0, 0, 0
 	};
 
-	auto deviceContext = GetDC()->m_hDC;
+	HDC deviceContext = GetDC()->m_hDC;
 
 	int  letWindowsChooseThisPixelFormat;
 	letWindowsChooseThisPixelFormat = ChoosePixelFormat(deviceContext, &pfd); 
@@ -147,7 +140,7 @@ void EnVistasWnd::CreateWinGLContext() {
 	glDepthFunc(GL_LEQUAL);
 }
 
-void EnVistasWnd::Paint(int width, int height, EnvContext* envContext) {
+void EnVistasWnd::Paint(int width, int height) {
 	_camera->Render(width, height);
 }
 
