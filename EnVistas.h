@@ -3,10 +3,10 @@
 #include <EnvExtension.h>
 #include <PtrArray.h>
 #include <memory>
-#include "envision_vistas_window.h"
 #include <FDataObj.h>
+#include <map>
 
-using std::shared_ptr;
+class EnVistasWnd;
 
 class EnVistas : public EnvVisualizer
 {
@@ -18,7 +18,7 @@ public:
       { }
 
    PtrArray< EnVistasWnd > m_wndArray;
-   map<HWND, EnVistasWnd*> parentToEnVistasWindow;
+   std::map<HWND, EnVistasWnd*> parentToEnVistasWindow;
 
    // other data
    int  m_nextID;

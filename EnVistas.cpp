@@ -8,7 +8,7 @@
 #include "EnVistas.h"
 #include <cassert>
 #include <stdexcept>
-
+#include "envision_vistas_window.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
