@@ -18,7 +18,6 @@ public:
       { }
 
    PtrArray< EnVistasWnd > m_wndArray;
-   CMap< HWND, HWND, EnVistasWnd*, EnVistasWnd* > m_hwndToEnVistasWndMap;
    map<HWND, EnVistasWnd*> parentToEnVistasWindow;
 
    // other data

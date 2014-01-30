@@ -67,10 +67,6 @@ BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
 BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	EnVistasWnd* pWnd = NULL;
 
-	BOOL found = m_hwndToEnVistasWndMap.Lookup( hParent, pWnd );
-	if (!found) {
-		return FALSE;
-	}
 	auto potentialMatch = parentToEnVistasWindow.find(hParent);
 	if (potentialMatch == parentToEnVistasWindow.end()) {
 		return false;
@@ -107,7 +103,6 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 		rect, parentWindowObject, m_nextID++ );
 
 	m_wndArray.Add( windowObject );
-	m_hwndToEnVistasWndMap.SetAt(parentWindowObject->GetSafeHwnd(), windowObject);
 	parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = windowObject;
 
 	return windowObject;
