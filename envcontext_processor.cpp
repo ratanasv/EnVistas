@@ -10,7 +10,11 @@ using std::string;
 using std::thread;
 
 static const string shp3dRegisterName("vip_core_shpviewer");
+#ifdef _DEBUG
 static const string shp3dPath("E:/Vault/envision_source/x64/Debug/shp3d.dll");
+#else
+static const string shp3dPath("E:/Vault/envision_source/x64/Release/shp3d.dll");
+#endif
 
 static shared_ptr<VI_VizPlugin3D> LoadSHP3DDLL(const VI_Path& path) {
 	if (!gPluginMgr->LoadPlugin(path)) {

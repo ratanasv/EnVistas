@@ -67,8 +67,8 @@ BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
 BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	EnVistasWnd* pWnd = NULL;
 
-	auto potentialMatch = parentToEnVistasWindow.find(hParent);
-	if (potentialMatch == parentToEnVistasWindow.end()) {
+	auto potentialMatch = _parentToEnVistasWindow.find(hParent);
+	if (potentialMatch == _parentToEnVistasWindow.end()) {
 		return false;
 	} else {
 		pWnd = potentialMatch->second;
@@ -97,15 +97,15 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 {
 	RECT rect;
 	parentWindowObject->GetClientRect( &rect );
+	EnVistasWnd* glCanvasWnd = new EnVistasWnd(context, rect.right, rect.bottom);
 
-	EnVistasWnd* windowObject = new EnVistasWnd(context, rect.right, rect.bottom);
-	windowObject->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
+	glCanvasWnd->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
 		rect, parentWindowObject, m_nextID++ );
 
-	m_wndArray.Add( windowObject );
-	parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = windowObject;
+	_listOfWindows.push_back(glCanvasWnd);
+	_parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = glCanvasWnd;
 
-	return windowObject;
+	return glCanvasWnd;
 }
 
 

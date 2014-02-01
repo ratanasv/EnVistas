@@ -3,6 +3,7 @@
 #include <EnvExtension.h>
 #include <PtrArray.h>
 #include <memory>
+#include <vector>
 #include <FDataObj.h>
 #include <map>
 
@@ -17,8 +18,8 @@ public:
       , m_nextID( 86000 )
       { }
 
-   PtrArray< EnVistasWnd > m_wndArray;
-   std::map<HWND, EnVistasWnd*> parentToEnVistasWindow;
+   std::vector<CWnd*> _listOfWindows;
+   std::map<HWND, EnVistasWnd*> _parentToEnVistasWindow;
 
    // other data
    int  m_nextID;
