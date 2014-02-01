@@ -5,6 +5,7 @@
 #include "SHP3D.h"
 #include <cstring>
 #include <thread>
+#include "SHP3DVizPlugin.h"
 
 using std::string;
 using std::thread;
