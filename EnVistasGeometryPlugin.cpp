@@ -53,7 +53,7 @@ VI_Path EnVistasGeometryPlugin::GetPath() {
 	char pathBuffer[128];
 	lstrcpy(pathBuffer, mapLayer->m_path);
 	VI_Path result(pathBuffer);
-	return result.GetDirectory();
+	return result;
 }
 
 long EnVistasGeometryPlugin::GetDiskSize() {
