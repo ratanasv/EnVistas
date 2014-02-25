@@ -3,6 +3,7 @@
 #include <memory>
 #include <EnvExtension.h>
 #include <vistas/vistas.h>
+#include <MAP.h>
 
 using std::shared_ptr;
 
@@ -25,4 +26,5 @@ private:
 public:
 	SHP3DProcessor(const EnvContext* context, VI_Scene& scene);
 	void operator()();
+	static int OnHandlerCallback(Map*, NOTIFY_TYPE, int, LONG_PTR, LONG_PTR ); 
 };

@@ -32,13 +32,15 @@ static shared_ptr<VI_VizPlugin3D> LoadSHP3DDLL(const VI_Path& path) {
 SHP3DProcessor::SHP3DProcessor(const EnvContext* context, VI_Scene& scene) : 
 	_envContext(context), _scene(scene), _lastActiveField(-1)
 {
-
+	context->pMapLayer->m_pMap->InstallNotifyHandler(SHP3DProcessor::OnHandlerCallback, 
+		(LONG_PTR)this);
 	_dataPlugin.reset(new EnVistasGeometryPlugin(context->pMapLayer));
 	VI_Path path(shp3dPath);
 	assert(path.Exists());
 	_vizPlugin = LoadSHP3DDLL(path);
-	thread task(*this);
-	task.detach();
+	const int irrelevant = 0;
+	_vizPlugin->SetData(_dataPlugin.get(), irrelevant);
+	_vizPlugin->SetScene(_scene);
 }
 
 void SHP3DProcessor::operator()() {
@@ -52,4 +54,18 @@ void SHP3DProcessor::operator()() {
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	}
+}
+
+int SHP3DProcessor::OnHandlerCallback(Map* map, NOTIFY_TYPE what, int a0, LONG_PTR a1,
+									  LONG_PTR extra) 
+{
+	if (what == NT_ACTIVEATTRIBUTECHANGED) {
+		SHP3DProcessor* thisObject = (SHP3DProcessor*)extra;
+		thisObject->_lastActiveField = thisObject->_envContext->pMapLayer->m_activeField;
+		const int irrelevant = 0;
+		thisObject->_vizPlugin->SetData(thisObject->_dataPlugin.get(), irrelevant);
+		thisObject->_scene.RemoveAllObjects();
+		thisObject->_vizPlugin->SetScene(thisObject->_scene);
+	}
+	return 1;
 }
