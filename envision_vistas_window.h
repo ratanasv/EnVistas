@@ -7,7 +7,7 @@
 
 using std::map;
 using std::shared_ptr;
-class ENVContextProcessor;
+class SHP3DProcessor;
 class VI_Camera;
 
 // Basic idea - Create a window that 
@@ -44,7 +44,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void Paint(int width, int height);
 	void SetWindowSize(int width, int height);
-	void SetEnvContext(EnvContext* context);
+	void UpdateData(EnvContext* context);
 private:
 	HGLRC _glContext;
 	int _windowWidth;
@@ -52,7 +52,7 @@ private:
 	EnvContext* _recentEnvContext;
 	const shared_ptr<VI_Camera> _camera;
 	const shared_ptr<VI_CameraInteractor> _cameraInteractor;
-	shared_ptr<ENVContextProcessor> _processor;
+	shared_ptr<SHP3DProcessor> _processor;
 	float _lastX;
 	float _lastY;
 };

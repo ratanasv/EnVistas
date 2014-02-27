@@ -149,6 +149,7 @@ void EnVistasWnd::SetWindowSize(int width, int height) {
 	_windowHeight = height;
 }
 
-void EnVistasWnd::SetEnvContext(EnvContext* context) {
+void EnVistasWnd::UpdateData(EnvContext* context) {
 	_recentEnvContext = context;
+	_processor->Update(_recentEnvContext);
 }

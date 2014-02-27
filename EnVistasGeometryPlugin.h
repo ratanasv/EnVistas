@@ -1,15 +1,18 @@
 #pragma once
 
 #include <vistas/vistas.h>
+#include <mutex>
+#include <boost/thread/shared_mutex.hpp>
 
 class MapLayer;
 class Bin;
+class EnvContext;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
 class EnVistasGeometryPlugin : public VI_ShapeDataPlugin {
 public:
-	EnVistasGeometryPlugin(const MapLayer* in) : mapLayer(in) {};
+	EnVistasGeometryPlugin(const EnvContext* in) : _envContext(in) {};
 
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
@@ -44,6 +47,9 @@ public:
 		ObtainValues(const VI_String& attribute);
 	virtual VI_Abstract::AbstractType 
 		GetDataTypeFromXML(const VI_String& attribute);
+
+	
+
 	virtual bool IsDataDiscrete(const VI_String& attribute);
 	virtual MinMaxColorArray  GetMinMaxColorArray(
 		const VI_String& attribute);
@@ -53,8 +59,12 @@ public:
 
 	virtual VI_Abstract::AbstractType GetAttributeDataType( const VI_String& attribute );
 
+	void SetEnvContext(const EnvContext* context);
+
 private:
-	const MapLayer* mapLayer;
+	mutable boost::shared_mutex _readWriteMutex;
+	const EnvContext* _envContext;
 	VI_Color ConvertToColor(const Bin& bin) const;
 	struct shpmainheader GetShpMainHeader() const;
+	VI_Abstract::AbstractType GetDataTypeActiveColumn();
 };

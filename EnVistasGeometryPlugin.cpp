@@ -4,6 +4,7 @@
 #include <EnvExtension.h>
 #include <Maplayer.h>
 #include <vector>
+#include <boost/thread/locks.hpp>
 
 using std::vector;
 using std::logic_error;
@@ -20,10 +21,6 @@ static const VI_String METHOD_FOR_VISTAS_ERROR("This class is for interfacing wi
 
 static const VI_String NOT_YET_IMPLEMENTED_ERROR("Not implemented yet. Talk to Vir\
 												 about this.");
-
-template <class T> void deleteArray(void* data) {
-	delete[] (T*)data;
-}
 
 VI_String EnVistasGeometryPlugin::GetFactoryRegistryName() {
 	throw METHOD_FOR_VISTAS_ERROR;
@@ -50,8 +47,10 @@ VI_String EnVistasGeometryPlugin::GetDataName() {
 }
 
 VI_Path EnVistasGeometryPlugin::GetPath() {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+
 	char pathBuffer[128];
-	lstrcpy(pathBuffer, mapLayer->m_path);
+	lstrcpy(pathBuffer, _envContext->pMapLayer->m_path);
 	VI_Path result(pathBuffer);
 	return result;
 }
@@ -73,15 +72,17 @@ VI_TemporalInfo EnVistasGeometryPlugin::GetTemporalInfo() {
 }
 
 VI_StringList EnVistasGeometryPlugin::GetAttributes() {
-	const int numColumns = mapLayer->GetColCount();
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	const int numColumns = _envContext->pMapLayer->GetColCount();
 	list<VI_String> attributes;
 	for (int i=0; i<numColumns; i++) {
-		attributes.push_back(VI_String(mapLayer->GetFieldLabel(i)));
+		attributes.push_back(VI_String(_envContext->pMapLayer->GetFieldLabel(i)));
 	}
 	return attributes;
 }
 
 VI_String EnVistasGeometryPlugin::GetAttributeLabel( const VI_String& attribute ) {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	return attribute;
 }
 
@@ -102,11 +103,13 @@ bool EnVistasGeometryPlugin::ValuesAreTemporal() {
 }
 
 int EnVistasGeometryPlugin::GetNumShapes() {
-	return mapLayer->m_pPolyArray->GetCount();
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	return _envContext->pMapLayer->m_pPolyArray->GetCount();
 }
 
 VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
-	auto polyArray = mapLayer->m_pPolyArray;
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
 	unsigned numShapes = polyArray->GetCount();
 	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
 	for (unsigned i=0; i<numShapes; i++) {
@@ -151,11 +154,12 @@ VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
 map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap( 
 	const VI_String& attribute ) 
 {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	map<VI_ImmutableAbstract, VI_Color> result;
-	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
 	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
 	for (int i=0; i<numBin; i++) {
-		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
 		auto color = ConvertToColor(bin);
 		result[VI_ImmutableAbstract(bin.m_minVal)] = color;
 	}
@@ -165,11 +169,12 @@ map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap(
 map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap( 
 	const VI_String& attribute) 
 {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	map<VI_ImmutableAbstract, VI_String> result;
-	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
 	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
 	for (int i=0; i<numBin; i++) {
-		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
 		result[VI_ImmutableAbstract(bin.m_minVal)] = VI_String(bin.m_label);
 	}
 	return result;
@@ -178,34 +183,26 @@ map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap
 shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::ObtainValues( 
 	const VI_String& attribute) 
 {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
-	auto mutableMapLayer = const_cast<MapLayer*>(mapLayer);
+	auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
 	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
 	for (int i=0; i<numBin; i++) {
-		auto bin = mapLayer->GetBin(USE_ACTIVE_COL, i);
+		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
 		result->push_back(VI_ImmutableAbstract(bin.m_minVal));
 	}
 	return result;
 }
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeFromXML( const VI_String& attribute ) {
-	TYPE dataType = mapLayer->GetFieldType(USE_ACTIVE_COL);
-	switch(dataType) {
-	case TYPE_INT:
-	case TYPE_LONG:
-		return VI_Abstract::VALUE_TYPE_INT;
-	case TYPE_FLOAT:
-		return VI_Abstract::VALUE_TYPE_DOUBLE;
-	case TYPE_CHAR:
-		return VI_Abstract::VALUE_TYPE_STRING;
-	default:
-		throw runtime_error("Unsupported DataType");
-		break;
-	}
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	return GetDataTypeActiveColumn();
+
 }
 
 bool EnVistasGeometryPlugin::IsDataDiscrete( const VI_String& attribute ) {
-	TYPE dataType = mapLayer->GetFieldType(USE_ACTIVE_COL);
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
 	switch(dataType) {
 	case TYPE_INT:
 	case TYPE_LONG:
@@ -230,14 +227,15 @@ VI_ShapeDataPlugin::ColorLabelArray EnVistasGeometryPlugin::ObtainColorLabelArra
 shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArray( 
 	const VI_String& attribute ) 
 {
-	auto dataType = GetAttributeDataType(attribute);
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	auto dataType = GetDataTypeActiveColumn();
 	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
 	unsigned numShapes = GetNumShapes();
 	switch(dataType) {
 	case VI_Abstract::VALUE_TYPE_INT:
 		for (int i=0; i<numShapes; i++) {
 			int buffer;
-			mapLayer->GetData(i, mapLayer->m_activeField, buffer);
+			_envContext->pMapLayer->GetData(i, _envContext->pMapLayer->m_activeField, buffer);
 			result->push_back(VI_ImmutableAbstract(buffer));
 		}
 		break;
@@ -248,10 +246,12 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 }
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI_String& attribute ) {
-	return GetDataTypeFromXML(attribute);
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	return GetDataTypeActiveColumn();
 }
 
 struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	struct shpmainheader Returned;
 	Returned.filecode = -1;
 	Returned.filelength = -1;
@@ -266,8 +266,8 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 	Returned.unused4 = -1;
 	Returned.version = -1;
 	float xmin, xmax, ymin, ymax, zmin, zmax;
-	mapLayer->GetExtents(xmin, xmax, ymin, ymax);
-	const_cast<MapLayer*>(mapLayer)->GetZExtents(zmin, zmax);
+	_envContext->pMapLayer->GetExtents(xmin, xmax, ymin, ymax);
+	const_cast<MapLayer*>(_envContext->pMapLayer)->GetZExtents(zmin, zmax);
 	Returned.xmin = xmin;
 	Returned.ymin = ymin;
 	Returned.zmin = zmin;
@@ -275,5 +275,26 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 	Returned.ymax = ymax;
 	Returned.zmax = zmax;
 	return Returned;
+}
+
+VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() {
+	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
+	switch(dataType) {
+	case TYPE_INT:
+	case TYPE_LONG:
+		return VI_Abstract::VALUE_TYPE_INT;
+	case TYPE_FLOAT:
+		return VI_Abstract::VALUE_TYPE_DOUBLE;
+	case TYPE_CHAR:
+		return VI_Abstract::VALUE_TYPE_STRING;
+	default:
+		throw runtime_error("Unsupported DataType");
+		break;
+	}
+}
+
+void EnVistasGeometryPlugin::SetEnvContext(const EnvContext* context) {
+	std::lock_guard<boost::shared_mutex> lk(_readWriteMutex);
+	_envContext = context;
 }
 

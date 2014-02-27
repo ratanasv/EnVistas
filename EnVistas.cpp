@@ -48,6 +48,9 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
+	for (auto it : _parentToEnVistasWindow) {
+		it.second->UpdateData(pContext);
+	}
 	return TRUE; 
 }
 
@@ -87,7 +90,7 @@ BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	pWnd->MoveWindow( &rect, FALSE );
 
 	pWnd->SetWindowSize(rect.right, rect.bottom);
-	pWnd->SetEnvContext(pContext);
+
 
 	return TRUE; 
 } 
