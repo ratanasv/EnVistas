@@ -104,7 +104,8 @@ bool EnVistasGeometryPlugin::ValuesAreTemporal() {
 
 int EnVistasGeometryPlugin::GetNumShapes() {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	return _envContext->pMapLayer->m_pPolyArray->GetCount();
+	return GetPolyArraySize();
+
 }
 
 VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
@@ -141,7 +142,7 @@ VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
 		}
 	}
 	VI_ShapeArrayRef shapeArrayRef(shapeArray);
-	shapeArrayRef.SetShpMainHeader(GetShpMainHeader());
+	shapeArrayRef.SetShpMainHeader(GetShapeExtents());
 	return shapeArrayRef;
 }
 
@@ -230,7 +231,7 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	auto dataType = GetDataTypeActiveColumn();
 	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
-	unsigned numShapes = GetNumShapes();
+	unsigned numShapes = GetPolyArraySize();
 	switch(dataType) {
 	case VI_Abstract::VALUE_TYPE_INT:
 		for (int i=0; i<numShapes; i++) {
@@ -252,6 +253,36 @@ VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI
 
 struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	return GetShapeExtents();
+
+}
+
+VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() {
+	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
+	switch(dataType) {
+	case TYPE_INT:
+	case TYPE_LONG:
+		return VI_Abstract::VALUE_TYPE_INT;
+	case TYPE_FLOAT:
+		return VI_Abstract::VALUE_TYPE_DOUBLE;
+	case TYPE_CHAR:
+		return VI_Abstract::VALUE_TYPE_STRING;
+	default:
+		throw runtime_error("Unsupported DataType");
+		break;
+	}
+}
+
+void EnVistasGeometryPlugin::SetEnvContext(const EnvContext* context) {
+	std::lock_guard<boost::shared_mutex> lk(_readWriteMutex);
+	_envContext = context;
+}
+
+int EnVistasGeometryPlugin::GetPolyArraySize() {
+	return _envContext->pMapLayer->m_pPolyArray->GetCount();
+}
+
+struct shpmainheader EnVistasGeometryPlugin::GetShapeExtents() const {
 	struct shpmainheader Returned;
 	Returned.filecode = -1;
 	Returned.filelength = -1;
@@ -275,26 +306,5 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 	Returned.ymax = ymax;
 	Returned.zmax = zmax;
 	return Returned;
-}
-
-VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() {
-	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
-	switch(dataType) {
-	case TYPE_INT:
-	case TYPE_LONG:
-		return VI_Abstract::VALUE_TYPE_INT;
-	case TYPE_FLOAT:
-		return VI_Abstract::VALUE_TYPE_DOUBLE;
-	case TYPE_CHAR:
-		return VI_Abstract::VALUE_TYPE_STRING;
-	default:
-		throw runtime_error("Unsupported DataType");
-		break;
-	}
-}
-
-void EnVistasGeometryPlugin::SetEnvContext(const EnvContext* context) {
-	std::lock_guard<boost::shared_mutex> lk(_readWriteMutex);
-	_envContext = context;
 }
 

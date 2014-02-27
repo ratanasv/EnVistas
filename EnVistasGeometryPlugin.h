@@ -37,6 +37,9 @@ public:
 	/* VI_ShapeArrayDataPlugin Methods. */
 	virtual bool		ValuesAreTemporal();
 	virtual int			GetNumShapes();
+
+	
+
 	virtual VI_ShapeArrayRef	GetShapeArray();
 
 	virtual std::map<VI_ImmutableAbstract, VI_Color>
@@ -66,5 +69,9 @@ private:
 	const EnvContext* _envContext;
 	VI_Color ConvertToColor(const Bin& bin) const;
 	struct shpmainheader GetShpMainHeader() const;
+
+	struct shpmainheader GetShapeExtents() const;
+
 	VI_Abstract::AbstractType GetDataTypeActiveColumn();
+	int GetPolyArraySize();
 };
