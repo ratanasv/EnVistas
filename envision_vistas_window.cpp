@@ -36,6 +36,7 @@ END_MESSAGE_MAP()
 
 void EnVistasWnd::OnPaint() {
 	gEvtMgr->DispatchAll();
+	CPaintDC dc(this);
 	auto oldDevContext = wglGetCurrentDC();
 	auto oldGLContext = wglGetCurrentContext();
 
@@ -103,6 +104,7 @@ void EnVistasWnd::OnMouseMove( UINT nFlags, CPoint point) {
 	}
 	_lastX = point.x;
 	_lastY = point.y;
+	OnPaint();
 }
 
 void EnVistasWnd::CreateWinGLContext() {
@@ -145,8 +147,9 @@ void EnVistasWnd::Paint(int width, int height) {
 }
 
 void EnVistasWnd::SetWindowSize(int width, int height) {
-	_windowHeight = width;
 	_windowHeight = height;
+	_windowWidth = width;
+	OnPaint();
 }
 
 void EnVistasWnd::UpdateData(EnvContext* context) {
