@@ -3,7 +3,6 @@
 #include <gl/GLU.h>
 
 #include "envision_vistas_window.h"
-#include "envcontext_processor.h"
 
 IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 
@@ -14,7 +13,7 @@ IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 
 EnVistasWnd::EnVistasWnd(EnvContext* context, const int width, const int height) : 
 	m_currentYear( -1 ), m_currentRun( -1 ), m_useCurrent( true ), m_activated(false), 
-	_recentEnvContext(context), _windowWidth(width), _windowHeight(height),
+	_windowWidth(width), _windowHeight(height),
 	_camera(new VI_Camera()),
 	_cameraInteractor(new VI_SphereInteractor(_camera, _camera->GetScene()))
 {
@@ -63,10 +62,7 @@ int EnVistasWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)  {
 	CreateWinGLContext();
 
 	bool isOk = VI_Init3D();
-	assert(isOk);
-	//must be called after glewInit since it internally makes gl calls.
-	_processor.reset(new SHP3DProcessor(_recentEnvContext, _camera->GetScene()));
-	
+	assert(isOk);	
 	return 0;
 }
 
@@ -152,7 +148,6 @@ void EnVistasWnd::SetWindowSize(int width, int height) {
 	OnPaint();
 }
 
-void EnVistasWnd::UpdateData(EnvContext* context) {
-	_recentEnvContext = context;
-	_processor->Update(_recentEnvContext);
+void EnVistasWnd::AttachVisualization(const shared_ptr<VI_VizPlugin3D>& viz) {
+	viz->SetScene(_camera->GetScene());
 }

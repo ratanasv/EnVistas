@@ -8,6 +8,7 @@
 #include <map>
 
 class EnVistasWnd;
+class SHP3DProcessor;
 
 class EnVistas : public EnvVisualizer
 {
@@ -42,7 +43,7 @@ private:
 
    int m_currentRun;
    int m_currentYear;    // zero-based!!! not
-
+   std::shared_ptr<SHP3DProcessor> _processor;
 };
 
 

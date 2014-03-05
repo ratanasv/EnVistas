@@ -9,6 +9,7 @@
 #include <cassert>
 #include <stdexcept>
 #include "envision_vistas_window.h"
+#include "envcontext_processor.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -18,7 +19,7 @@ static char THIS_FILE[] = __FILE__;
 
 extern EnVistas *theViz;
 
-//*********************************************************
+using namespace std;
 
 
 ///////////////////////////////////////////////////////////////
@@ -48,16 +49,18 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
-	for (auto it : _parentToEnVistasWindow) {
-		it.second->UpdateData(pContext);
-	}
+	_processor->Update(pContext);
 	return TRUE; 
 }
 
 
-BOOL EnVistas::InitWindow( EnvContext *pContext, HWND hParent ) {
+BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
 	CWnd* pParent = pContext->pWnd;
 	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
+
+	//must be called after glewInit since it internally makes OpenGL calls.
+	_processor.reset(new SHP3DProcessor(pContext));
+	pWnd->AttachVisualization(_processor->_vizPlugin);
 
 	pWnd->m_useCurrent = true;
 	pWnd->m_currentYear = pContext->currentYear;

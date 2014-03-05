@@ -29,8 +29,8 @@ static shared_ptr<VI_VizPlugin3D> LoadSHP3DDLL(const VI_Path& path) {
 	return shared_ptr<VI_VizPlugin3D>(shp3dPlugin);
 }
 
-SHP3DProcessor::SHP3DProcessor(const EnvContext* context, VI_Scene& scene) : 
-	_envContext(context), _scene(scene)
+SHP3DProcessor::SHP3DProcessor(const EnvContext* context) : 
+	_envContext(context)
 {
 	context->pMapLayer->m_pMap->InstallNotifyHandler(SHP3DProcessor::OnHandlerCallback, 
 		(LONG_PTR)this);
@@ -58,6 +58,4 @@ void SHP3DProcessor::Update(const EnvContext* envContext) {
 	}
 	const int irrelevant = 0;
 	_vizPlugin->SetData(_dataPlugin.get(), irrelevant);
-	_scene.RemoveAllObjects();
-	_vizPlugin->SetScene(_scene);
 }

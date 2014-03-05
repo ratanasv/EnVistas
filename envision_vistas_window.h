@@ -9,6 +9,7 @@ using std::map;
 using std::shared_ptr;
 class SHP3DProcessor;
 class VI_Camera;
+class VI_VizPlugin3D;
 
 // Basic idea - Create a window that 
 
@@ -44,15 +45,13 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void Paint(int width, int height);
 	void SetWindowSize(int width, int height);
-	void UpdateData(EnvContext* context);
+	void AttachVisualization(const std::shared_ptr<VI_VizPlugin3D>& viz);
 private:
 	HGLRC _glContext;
 	int _windowWidth;
 	int _windowHeight;
-	EnvContext* _recentEnvContext;
 	const shared_ptr<VI_Camera> _camera;
 	const shared_ptr<VI_CameraInteractor> _cameraInteractor;
-	shared_ptr<SHP3DProcessor> _processor;
 	float _lastX;
 	float _lastY;
 };
