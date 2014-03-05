@@ -6,6 +6,7 @@
 #include <vector>
 #include <FDataObj.h>
 #include <map>
+#include <atomic>
 
 class EnVistasWnd;
 class SHP3DProcessor;
@@ -23,7 +24,7 @@ public:
    std::map<HWND, EnVistasWnd*> _parentToEnVistasWindow;
 
    // other data
-   int  m_nextID;
+   std::atomic<int>  m_nextID;
    //---------------------------------------------------------------------                    INPUT        RUNTIME      POSTRUN
   
    // EnvVisualizer overrides
