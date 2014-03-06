@@ -54,6 +54,8 @@ int SHP3DProcessor::OnHandlerCallback(Map* map, NOTIFY_TYPE what, int a0, LONG_P
 void SHP3DProcessor::Update(const EnvContext* envContext) {
 	if (_envContext != envContext) {
 		_envContext = envContext;
+		//whoa, _dataPlugin might be in used concurrently, causing _vizPlugin
+		//to produce untruthty results.
 		_dataPlugin->SetEnvContext(envContext);
 	}
 	const int irrelevant = 0;
