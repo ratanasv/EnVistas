@@ -22,6 +22,46 @@ static const VI_String METHOD_FOR_VISTAS_ERROR("This class is for interfacing wi
 static const VI_String NOT_YET_IMPLEMENTED_ERROR("Not implemented yet. Talk to Vir\
 												 about this.");
 
+EnVistasGeometryPlugin::EnVistasGeometryPlugin(const EnvContext* in) : 
+	_envContext(in) 
+{
+
+	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
+	unsigned numShapes = polyArray->GetCount();
+	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
+	for (unsigned i = 0; i < numShapes; i++) {
+		auto shape = polyArray->ElementAt(i);
+		CDWordArray& parts = shape->m_vertexPartArray;
+		auto numParts = parts.GetCount();
+		VertexArray& vertices = shape->m_vertexArray;
+		auto numVerts = vertices.GetCount();
+
+		shapeArray->at(i).ShapeHeader.numparts = numParts;
+		shapeArray->at(i).ShapeHeader.numpoints = numVerts;
+		shapeArray->at(i).ShapeHeader.xmax = shape->m_xMax;
+		shapeArray->at(i).ShapeHeader.xmin = shape->m_xMin;
+		shapeArray->at(i).ShapeHeader.ymin = shape->m_yMin;
+		shapeArray->at(i).ShapeHeader.ymax = shape->m_yMax;
+		float zmin, zmax;
+		shape->GetBoundingZ(zmin, zmax);
+		shapeArray->at(i).ShapeHeader.zmin = zmin;
+		shapeArray->at(i).ShapeHeader.zmax = zmax;
+		shapeArray->at(i).ShapeType = 15;
+		for (unsigned j = 0; j < numParts; j++) {
+			shapeArray->at(i).Parts.push_back(parts.ElementAt(j));
+		}
+		shapeArray->at(i).Vertices.reset(new vector<struct point3d>(numVerts));
+		for (unsigned j = 0; j < numVerts; j++) {
+			shapeArray->at(i).Vertices->at(j).x = vertices.ElementAt(j).x;
+			shapeArray->at(i).Vertices->at(j).y = vertices.ElementAt(j).y;
+			shapeArray->at(i).Vertices->at(j).z = vertices.ElementAt(j).z;
+		}
+	}
+	_shapeArray = VI_ShapeArray(shapeArray, GetShapeExtents());
+
+}
+
+
 VI_String EnVistasGeometryPlugin::GetFactoryRegistryName() {
 	throw METHOD_FOR_VISTAS_ERROR;
 }
@@ -108,42 +148,9 @@ int EnVistasGeometryPlugin::GetNumShapes() {
 
 }
 
-VI_ShapeArrayRef EnVistasGeometryPlugin::GetShapeArray() {
+VI_ShapeArray EnVistasGeometryPlugin::GetShapeArray() {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
-	unsigned numShapes = polyArray->GetCount();
-	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
-	for (unsigned i=0; i<numShapes; i++) {
-		auto shape = polyArray->ElementAt(i);
-		CDWordArray& parts = shape->m_vertexPartArray;
-		auto numParts = parts.GetCount();
- 		VertexArray& vertices = shape->m_vertexArray;
-		auto numVerts = vertices.GetCount();
-
-		shapeArray->at(i).ShapeHeader.numparts = numParts;
-		shapeArray->at(i).ShapeHeader.numpoints = numVerts;
-		shapeArray->at(i).ShapeHeader.xmax = shape->m_xMax;
-		shapeArray->at(i).ShapeHeader.xmin = shape->m_xMin;
-		shapeArray->at(i).ShapeHeader.ymin = shape->m_yMin;
-		shapeArray->at(i).ShapeHeader.ymax = shape->m_yMax;
-		float zmin, zmax;
-		shape->GetBoundingZ(zmin, zmax);
-		shapeArray->at(i).ShapeHeader.zmin = zmin;
-		shapeArray->at(i).ShapeHeader.zmax = zmax;
-		shapeArray->at(i).ShapeType = 15;
-		for (unsigned j=0; j<numParts; j++) {
-			shapeArray->at(i).Parts.push_back(parts.ElementAt(j));
-		}
-		shapeArray->at(i).Vertices.reset(new vector<struct point3d>(numVerts));
-		for (unsigned j=0; j<numVerts; j++) {
-			shapeArray->at(i).Vertices->at(j).x = vertices.ElementAt(j).x;
-			shapeArray->at(i).Vertices->at(j).y = vertices.ElementAt(j).y;
-			shapeArray->at(i).Vertices->at(j).z = vertices.ElementAt(j).z;
-		}
-	}
-	VI_ShapeArrayRef shapeArrayRef(shapeArray);
-	shapeArrayRef.SetShpMainHeader(GetShapeExtents());
-	return shapeArrayRef;
+	return _shapeArray;
 }
 
 VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
@@ -307,4 +314,3 @@ struct shpmainheader EnVistasGeometryPlugin::GetShapeExtents() const {
 	Returned.zmax = zmax;
 	return Returned;
 }
-

@@ -12,7 +12,7 @@ class EnvContext;
 ////////////////////////////////////
 class EnVistasGeometryPlugin : public VI_ShapeDataPlugin {
 public:
-	EnVistasGeometryPlugin(const EnvContext* in) : _envContext(in) {};
+	EnVistasGeometryPlugin(const EnvContext* in);;
 
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
@@ -40,7 +40,7 @@ public:
 
 	
 
-	virtual VI_ShapeArrayRef	GetShapeArray();
+	virtual VI_ShapeArray	GetShapeArray();
 
 	virtual std::map<VI_ImmutableAbstract, VI_Color>
 		ObtainValueColorMap(const VI_String& attribute);
@@ -67,6 +67,8 @@ public:
 private:
 	mutable boost::shared_mutex _readWriteMutex;
 	const EnvContext* _envContext;
+	VI_ShapeArray _shapeArray;
+
 	VI_Color ConvertToColor(const Bin& bin) const;
 	struct shpmainheader GetShpMainHeader() const;
 
