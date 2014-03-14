@@ -9,7 +9,7 @@ using std::map;
 using std::shared_ptr;
 class SHP3DProcessor;
 class VI_Camera;
-class VI_VizPlugin3D;
+class SHP3D;
 
 // Basic idea - Create a window that 
 
@@ -45,7 +45,7 @@ public:
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void Paint(int width, int height);
 	void SetWindowSize(int width, int height);
-	void AttachVisualization(const std::shared_ptr<VI_VizPlugin3D>& viz);
+	void AttachVisualization(const std::shared_ptr<SHP3D>& viz);
 private:
 	HGLRC _glContext;
 	int _windowWidth;

@@ -8,14 +8,14 @@
 using std::shared_ptr;
 
 class VI_ShapeDataPlugin;
-class VI_VizPlugin3D;
+class SHP3D;
 class EnVistasGeometryPlugin;
 class VI_Scene;
 
 class SHP3DProcessor {
 private:
 	const EnvContext* _envContext;
-	shared_ptr<VI_VizPlugin3D> _vizPlugin;
+	shared_ptr<SHP3D> _vizPlugin;
 	shared_ptr<EnVistasGeometryPlugin> _dataPlugin;
 public:
 	SHP3DProcessor(const EnvContext* context);

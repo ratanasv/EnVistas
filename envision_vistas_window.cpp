@@ -3,6 +3,7 @@
 #include <gl/GLU.h>
 
 #include "envision_vistas_window.h"
+#include "SHP3DVizPlugin.h"
 
 IMPLEMENT_DYNCREATE( EnVistasWnd, CWnd )
 
@@ -148,6 +149,6 @@ void EnVistasWnd::SetWindowSize(int width, int height) {
 	OnPaint();
 }
 
-void EnVistasWnd::AttachVisualization(const shared_ptr<VI_VizPlugin3D>& viz) {
+void EnVistasWnd::AttachVisualization(const shared_ptr<SHP3D>& viz) {
 	viz->SetScene(_camera->GetScene());
 }

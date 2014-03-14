@@ -17,16 +17,16 @@ static const string shp3dPath("E:/Vault/envision_source/x64/Debug/shp3d.dll");
 static const string shp3dPath("E:/Vault/envision_source/x64/Release/shp3d.dll");
 #endif
 
-static shared_ptr<VI_VizPlugin3D> LoadSHP3DDLL(const VI_Path& path) {
+static shared_ptr<SHP3D> LoadSHP3DDLL(const VI_Path& path) {
 	if (!gPluginMgr->LoadPlugin(path)) {
-		return shared_ptr<VI_VizPlugin3D>();
+		return shared_ptr<SHP3D>();
 	}
 	auto plugin = gPluginMgr->GetPluginInstance(shp3dRegisterName);
 	auto shp3dPlugin = dynamic_cast<SHP3D*>(plugin);
 	if (!shp3dPlugin) {
-		return shared_ptr<VI_VizPlugin3D>();
+		return shared_ptr<SHP3D>();
 	}
-	return shared_ptr<VI_VizPlugin3D>(shp3dPlugin);
+	return shared_ptr<SHP3D>(shp3dPlugin);
 }
 
 SHP3DProcessor::SHP3DProcessor(const EnvContext* context) : 
@@ -38,7 +38,7 @@ SHP3DProcessor::SHP3DProcessor(const EnvContext* context) :
 	assert(path.Exists());
 	_vizPlugin = LoadSHP3DDLL(path);
 	_dataPlugin.reset(new EnVistasGeometryPlugin(_envContext));
-	Update(_envContext);
+	_vizPlugin->SetDataSynchronous(_dataPlugin.get());
 }
 
 int SHP3DProcessor::OnHandlerCallback(Map* map, NOTIFY_TYPE what, int a0, LONG_PTR a1,
@@ -59,5 +59,5 @@ void SHP3DProcessor::Update(const EnvContext* envContext) {
 		_dataPlugin->SetEnvContext(envContext);
 	}
 	const int irrelevant = 0;
-	_vizPlugin->SetData(_dataPlugin.get(), irrelevant);
+	_vizPlugin->UpdateDataSynchronous(_dataPlugin.get());
 }
