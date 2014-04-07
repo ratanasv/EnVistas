@@ -36,7 +36,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -195,7 +195,6 @@
   <ItemGroup>
     <None Include="EnVistas.def" />
     <None Include="ReadMe.txt" />
-    <None Include="res\EnVistas.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\EnvExtension.cpp" />
@@ -216,6 +215,7 @@
     <ClCompile Include="envcontext_processor.cpp" />
     <ClCompile Include="envision_vistas_window.cpp" />
     <ClCompile Include="EnVistas.cpp" />
+    <ClCompile Include="EnVistasControl.cpp" />
     <ClCompile Include="EnVistasGeometryPlugin.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -229,6 +229,7 @@
     <ClInclude Include="envcontext_processor.h" />
     <ClInclude Include="envision_vistas_window.h" />
     <ClInclude Include="EnVistas.h" />
+    <ClInclude Include="EnVistasControl.h" />
     <ClInclude Include="EnVistasGeometryPlugin.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -240,4 +241,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="EnVistas.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

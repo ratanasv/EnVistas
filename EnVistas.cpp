@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include "envision_vistas_window.h"
 #include "envcontext_processor.h"
+#include "EnVistasControl.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -57,6 +58,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
 	CWnd* pParent = pContext->pWnd;
 	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
+	
 
 	//must be called after glewInit since it internally makes OpenGL calls.
 	_processor.reset(new SHP3DProcessor(pContext));
@@ -107,6 +109,9 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 
 	glCanvasWnd->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
 		rect, parentWindowObject, m_nextID++ );
+
+	EnVistasControl* controlWnd = new EnVistasControl(parentWindowObject);
+	int result = controlWnd->Create(EnVistasControl::IDD, parentWindowObject);
 
 	_listOfWindows.push_back(glCanvasWnd);
 	_parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = glCanvasWnd;
