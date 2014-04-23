@@ -10,23 +10,17 @@
 using std::string;
 using std::thread;
 
-static const string shp3dRegisterName("vip_core_shpviewer");
-#ifdef _DEBUG
-static const string shp3dPath("E:/Vault/envision_source/x64/Debug/shp3d.dll");
-#else
-static const string shp3dPath("E:/Vault/envision_source/x64/Release/shp3d.dll");
-#endif
+static string GetCurrentPath() {
+	TCHAR currentDir[MAX_PATH] = "";
+	if (!::GetCurrentDirectory(sizeof(currentDir)-1, currentDir)) {
+		throw runtime_error("cannot invoke ::GetCurrentDirectory");
+	}
 
-static shared_ptr<SHP3D> LoadSHP3DDLL(const VI_Path& path) {
-	if (!gPluginMgr->LoadPlugin(path)) {
-		return shared_ptr<SHP3D>();
-	}
-	auto plugin = gPluginMgr->GetPluginInstance(shp3dRegisterName);
-	auto shp3dPlugin = dynamic_cast<SHP3D*>(plugin);
-	if (!shp3dPlugin) {
-		return shared_ptr<SHP3D>();
-	}
-	return shared_ptr<SHP3D>(shp3dPlugin);
+	return string(currentDir);
+}
+
+static shared_ptr<SHP3D> LoadSHP3D(const VI_Path& path) {
+	return shared_ptr<SHP3D>(new SHP3D());
 }
 
 SHP3DProcessor::SHP3DProcessor(const EnvContext* context) : 
@@ -34,9 +28,7 @@ SHP3DProcessor::SHP3DProcessor(const EnvContext* context) :
 {
 	context->pMapLayer->m_pMap->InstallNotifyHandler(SHP3DProcessor::OnHandlerCallback, 
 		(LONG_PTR)this);
-	VI_Path path(shp3dPath);
-	assert(path.Exists());
-	_vizPlugin = LoadSHP3DDLL(path);
+	_vizPlugin = LoadSHP3D(VI_Path());
 	_dataPlugin.reset(new EnVistasGeometryPlugin(_envContext));
 	_vizPlugin->SetDataSynchronous(_dataPlugin.get());
 }

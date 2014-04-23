@@ -52,7 +52,7 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -83,6 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ENVISTAS_PLUGIN_DIR)$(Platform)\$(Configuration)\</OutDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -114,7 +115,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);_DEBUG;_AFXEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);_DEBUG;_AFXEXT;VISTAS_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\;..\libs;$(VISTAS_DIR)\VISTAS Core\include;$(VISTAS_DIR)\VISTAS Plugins\ENVISION;$(VISTAS_DIR)\VISTAS Plugins\SHP3D;$(VISTAS_DIR)\dependencies\dependencies_h;$(VISTAS_DIR)\dependencies\dependencies_h\msvc;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -122,7 +123,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
       <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);$(VISTAS_DIR)\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);$(BOOST_DIR)stage/x64;$(OutDir)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
+      <AdditionalDependencies>libs.lib;envision.lib;shp3d.lib;OpenGL32.lib;glu32.lib</AdditionalDependencies>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
