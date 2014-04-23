@@ -10,9 +10,9 @@ class EnvContext;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
-class EnVistasGeometryPlugin : public VI_ShapeDataPlugin {
+class EnVistasGeometryPlugin : public VI_ShapeDeltaDataPlugin {
 public:
-	EnVistasGeometryPlugin(const EnvContext* in);;
+	EnVistasGeometryPlugin(const EnvContext* in);
 
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
@@ -61,6 +61,8 @@ public:
 	virtual shared_ptr<vector<VI_ImmutableAbstract>> GetAttributeArray( const VI_String& attribute );
 
 	virtual VI_Abstract::AbstractType GetAttributeDataType( const VI_String& attribute );
+
+	virtual std::shared_ptr<const std::vector<VI_ShapeDelta>> GetDeltaArray() const;
 
 	void SetEnvContext(const EnvContext* context);
 

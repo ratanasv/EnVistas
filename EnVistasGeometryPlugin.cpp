@@ -5,6 +5,9 @@
 #include <Maplayer.h>
 #include <vector>
 #include <boost/thread/locks.hpp>
+#include "SHP3DUtility.h"
+#include <EnvEngine/DeltaArray.h>
+#include <EnvInterface.h>
 
 using std::vector;
 using std::logic_error;
@@ -313,4 +316,26 @@ struct shpmainheader EnVistasGeometryPlugin::GetShapeExtents() const {
 	Returned.ymax = ymax;
 	Returned.zmax = zmax;
 	return Returned;
+}
+
+shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>> 
+	EnVistasGeometryPlugin::GetDeltaArray() const 
+{
+	auto result = InitDynamicArray<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>();
+	auto deltas = _envContext->pDeltaArray;
+	if (!deltas) {
+		throw runtime_error("EnvContext has not delta array.");
+	}
+
+	for (int i=0; i<deltas->GetSize(); i++) {
+		auto& delta = GetDelta(deltas, i);
+		int oldValue, newValue;
+		delta.oldValue.GetAsInt(oldValue);
+		delta.newValue.GetAsInt(newValue);
+		result->push_back(VI_ShapeDelta(delta.cell, 
+			VI_ImmutableAbstract(oldValue), 
+			VI_ImmutableAbstract(newValue)
+		));
+	}
+	return result;
 }

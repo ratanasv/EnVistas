@@ -52,6 +52,7 @@ int SHP3DProcessor::OnHandlerCallback(Map* map, NOTIFY_TYPE what, int a0, LONG_P
 }
 
 void SHP3DProcessor::Update(const EnvContext* envContext) {
+	//envContext could change after we hit run.
 	if (_envContext != envContext) {
 		_envContext = envContext;
 		//whoa, _dataPlugin might be in used concurrently, causing _vizPlugin
