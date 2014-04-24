@@ -324,7 +324,7 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 	auto result = InitDynamicArray<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>();
 	auto deltas = _envContext->pDeltaArray;
 	if (!deltas) {
-		throw runtime_error("EnvContext has not delta array.");
+		throw logic_error("EnvContext has no delta array.");
 	}
 
 	for (int i=0; i<deltas->GetSize(); i++) {
