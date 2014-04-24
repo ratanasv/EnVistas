@@ -4,7 +4,9 @@
 EnvContextObservable EnvContextObservable::INSTANCE;
 
 EnvContextObservable::EnvContextObservable() {
-
+	_envContext = NULL;
+	_activeColumn = -1;
+	_currentYear = -1;
 }
 
 int EnvContextObservable::GetCurrentYear() const {
@@ -28,11 +30,17 @@ void EnvContextObservable::SetActiveColumn(int column) {
 }
 
 void EnvContextObservable::SetEnvContext(EnvContext* context) {
-	_envContext->pMapLayer->m_pMap->RemoveNotifyHandler(
-		EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
-	_envContext = context;
-	_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
-		EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
+	if (_envContext != context) {
+		if (_envContext) {
+			_envContext->pMapLayer->m_pMap->RemoveNotifyHandler(
+				EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
+		}
+		_envContext = context;
+		_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
+			EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
+		SetCurrentYear(_envContext->currentYear);
+		SetActiveColumn(_envContext->pMapLayer->m_activeField);
+	}
 }
 
 int EnvContextObservable::OnHandlerCallback(
@@ -41,6 +49,7 @@ int EnvContextObservable::OnHandlerCallback(
 	if (what == NT_ACTIVEATTRIBUTECHANGED) {
 		EnvContextObservable* thisObject = (EnvContextObservable*)extra;
 		thisObject->SetActiveColumn(thisObject->_envContext->pMapLayer->m_activeField);
+		thisObject->NotifyObservers();
 	}
 	return 1;
 }

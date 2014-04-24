@@ -51,7 +51,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
-	EnvContextObservable::INSTANCE.SetCurrentYear(pContext->pMapLayer->m_activeField);
+	EnvContextObservable::INSTANCE.SetCurrentYear(pContext->currentYear);
 	EnvContextObservable::INSTANCE.SetEnvContext(pContext);
 	EnvContextObservable::INSTANCE.NotifyObservers();
 	return TRUE; 
@@ -59,6 +59,8 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 
 
 BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
+	EnvContextObservable::INSTANCE.SetEnvContext(pContext);
+
 	CWnd* pParent = pContext->pWnd;
 	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
 	
