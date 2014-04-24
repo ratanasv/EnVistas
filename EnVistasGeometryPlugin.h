@@ -7,6 +7,7 @@
 class MapLayer;
 class Bin;
 class EnvContext;
+class VData;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
@@ -67,15 +68,15 @@ public:
 	void SetEnvContext(const EnvContext* context);
 
 private:
+	VI_Color ConvertToColor(const Bin& bin) const;
+	struct shpmainheader GetShpMainHeader() const;
+	struct shpmainheader GetShapeExtents() const;
+	VI_Abstract::AbstractType GetDataTypeActiveColumn() const;
+	int GetPolyArraySize();
+	bool CheckTypeVDataAndMapLayer(const VData& vData) const;
+
+private:
 	mutable boost::shared_mutex _readWriteMutex;
 	const EnvContext* _envContext;
 	VI_ShapeArray _shapeArray;
-
-	VI_Color ConvertToColor(const Bin& bin) const;
-	struct shpmainheader GetShpMainHeader() const;
-
-	struct shpmainheader GetShapeExtents() const;
-
-	VI_Abstract::AbstractType GetDataTypeActiveColumn();
-	int GetPolyArraySize();
 };

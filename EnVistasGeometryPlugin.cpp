@@ -267,7 +267,7 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 
 }
 
-VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() {
+VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() const {
 	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
 	switch(dataType) {
 	case TYPE_INT:
@@ -338,4 +338,12 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 		));
 	}
 	return result;
+}
+
+bool EnVistasGeometryPlugin::CheckTypeVDataAndMapLayer(const VData& vData) const {
+	if (vData.GetType() != GetDataTypeActiveColumn()) {
+		return false;
+	} else {
+		return true;
+	}
 }
