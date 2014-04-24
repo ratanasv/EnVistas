@@ -20,7 +20,8 @@ private:
 public:
 	SHP3DProcessor(const EnvContext* context);
 	static int OnHandlerCallback(Map*, NOTIFY_TYPE, int, LONG_PTR, LONG_PTR ); 
-	void Update(const EnvContext* envContext);
+	void OnActiveColumnChanged(const EnvContext* envContext);
+	void OnActiveYearChanged(const EnvContext* envContext);
 	void AddObjectToScene(VI_Scene& scene);
 
 	friend class EnVistas;

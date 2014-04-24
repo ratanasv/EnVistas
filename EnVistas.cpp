@@ -50,7 +50,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
-	_processor->Update(pContext);
+	_processor->OnActiveYearChanged(pContext);
 	return TRUE; 
 }
 

@@ -38,12 +38,12 @@ int SHP3DProcessor::OnHandlerCallback(Map* map, NOTIFY_TYPE what, int a0, LONG_P
 {
 	if (what == NT_ACTIVEATTRIBUTECHANGED) {
 		SHP3DProcessor* thisObject = (SHP3DProcessor*)extra;
-		thisObject->Update(thisObject->_envContext);
+		thisObject->OnActiveColumnChanged(thisObject->_envContext);
 	}
 	return 1;
 }
 
-void SHP3DProcessor::Update(const EnvContext* envContext) {
+void SHP3DProcessor::OnActiveColumnChanged(const EnvContext* envContext) {
 	//envContext could change after we hit run.
 	if (_envContext != envContext) {
 		_envContext = envContext;
@@ -51,6 +51,13 @@ void SHP3DProcessor::Update(const EnvContext* envContext) {
 		//to produce untruthty results.
 		_dataPlugin->SetEnvContext(envContext);
 	}
-	const int irrelevant = 0;
-	_vizPlugin->UpdateDataSynchronous(_dataPlugin.get());
+	_vizPlugin->UpdateSynchronous();
+}
+
+void SHP3DProcessor::OnActiveYearChanged(const EnvContext* envContext) {
+	if (_envContext != envContext) {
+		_envContext = envContext;
+		_dataPlugin->SetEnvContext(envContext);
+	}
+	_vizPlugin->DeltaUpdateSynchronous();
 }
