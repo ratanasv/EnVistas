@@ -207,7 +207,7 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::ObtainValues(
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeFromXML( const VI_String& attribute ) {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	return GetDataTypeActiveColumn();
+	return GetDataTypeColumn(USE_ACTIVE_COL);
 
 }
 
@@ -239,7 +239,7 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 	const VI_String& attribute ) 
 {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	auto dataType = GetDataTypeActiveColumn();
+	auto dataType = GetDataTypeColumn(USE_ACTIVE_COL);
 	shared_ptr<vector<VI_ImmutableAbstract>> result(new vector<VI_ImmutableAbstract>());
 	unsigned numShapes = GetPolyArraySize();
 	switch(dataType) {
@@ -258,7 +258,7 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 
 VI_Abstract::AbstractType EnVistasGeometryPlugin::GetAttributeDataType( const VI_String& attribute ) {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	return GetDataTypeActiveColumn();
+	return GetDataTypeColumn(USE_ACTIVE_COL);
 }
 
 struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
@@ -267,8 +267,10 @@ struct shpmainheader EnVistasGeometryPlugin::GetShpMainHeader() const {
 
 }
 
-VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeActiveColumn() const {
-	TYPE dataType = _envContext->pMapLayer->GetFieldType(USE_ACTIVE_COL);
+VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeColumn(
+	int column) const 
+{
+	TYPE dataType = _envContext->pMapLayer->GetFieldType(column);
 	switch(dataType) {
 	case TYPE_INT:
 	case TYPE_LONG:
@@ -329,6 +331,9 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 
 	for (int i=0; i<deltas->GetSize(); i++) {
 		auto& delta = GetDelta(deltas, i);
+		if (!IsCurrentYear(delta) || !IsActiveColumn(delta)) {
+			continue;
+		}
 		int oldValue, newValue;
 		delta.oldValue.GetAsInt(oldValue);
 		delta.newValue.GetAsInt(newValue);
@@ -340,10 +345,18 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 	return result;
 }
 
-bool EnVistasGeometryPlugin::CheckTypeVDataAndMapLayer(const VData& vData) const {
-	if (vData.GetType() != GetDataTypeActiveColumn()) {
+bool EnVistasGeometryPlugin::CheckTypeVDataAndMapLayer(const DELTA& delta) const {
+	if (delta.newValue.GetType() != GetDataTypeColumn(delta.col)) {
 		return false;
 	} else {
 		return true;
 	}
+}
+
+bool EnVistasGeometryPlugin::IsActiveColumn(const DELTA& delta) const {
+	return delta.cell == _envContext->pMapLayer->m_activeField;
+}
+
+bool EnVistasGeometryPlugin::IsCurrentYear(const DELTA& delta) const {
+	return delta.year == _envContext->currentYear;
 }
