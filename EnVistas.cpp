@@ -11,6 +11,7 @@
 #include "envision_vistas_window.h"
 #include "envcontext_processor.h"
 #include "EnVistasControl.h"
+#include "EnvContextObservable.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -50,7 +51,9 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
-	_processor->OnActiveYearChanged(pContext);
+	EnvContextObservable::INSTANCE.SetCurrentYear(pContext->pMapLayer->m_activeField);
+	EnvContextObservable::INSTANCE.SetEnvContext(pContext);
+	EnvContextObservable::INSTANCE.NotifyObservers();
 	return TRUE; 
 }
 
@@ -114,6 +117,7 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 	int result = controlWnd->Create(EnVistasControl::IDD, parentWindowObject);
 
 	_listOfWindows.push_back(glCanvasWnd);
+	_listOfWindows.push_back(controlWnd);
 	_parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = glCanvasWnd;
 
 	return glCanvasWnd;
