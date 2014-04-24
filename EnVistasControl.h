@@ -22,4 +22,5 @@ protected:
 public:
 	CSliderCtrl _timelineSlider;
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 };

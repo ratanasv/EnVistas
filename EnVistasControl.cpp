@@ -14,7 +14,7 @@ IMPLEMENT_DYNAMIC(EnVistasControl, CDialogEx)
 EnVistasControl::EnVistasControl(CWnd* pParent /*=NULL*/)
 	: CDialogEx(EnVistasControl::IDD, pParent)
 {
-
+	
 }
 
 EnVistasControl::~EnVistasControl()
@@ -30,6 +30,7 @@ void EnVistasControl::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(EnVistasControl, CDialogEx)
 	ON_WM_VSCROLL()
+	ON_WM_CREATE()
 END_MESSAGE_MAP()
 
 
@@ -45,6 +46,16 @@ END_MESSAGE_MAP()
 
 void EnVistasControl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
+	_timelineSlider.SetRange(0, 13, 1);
+	_timelineSlider.SetTicFreq(13);
 	int what = _timelineSlider.GetPos();
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+}
+
+
+int EnVistasControl::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (CDialogEx::OnCreate(lpCreateStruct) == -1) {
+		return -1;
+	}
 }

@@ -45,6 +45,9 @@
     <ClCompile Include="EnVistasControl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="EnvContextObservable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnVistasControl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnvContextObservable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
