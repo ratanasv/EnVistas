@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "EnvContextObservable.h"
 
-EnvContextObservable EnvContextObservable::INSTANCE;
-
-EnvContextObservable::EnvContextObservable() {
-	_envContext = NULL;
-	_activeColumn = -1;
-	_currentYear = -1;
+EnvContextObservable::EnvContextObservable(EnvContext* context) {
+	_envContext = context;
+	_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
+		EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
+	SetCurrentYear(_envContext->currentYear);
+	SetActiveColumn(_envContext->pMapLayer->m_activeField);
 }
 
 int EnvContextObservable::GetCurrentYear() const {

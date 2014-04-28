@@ -12,17 +12,18 @@ class VI_ShapeDataPlugin;
 class SHP3D;
 class EnVistasGeometryPlugin;
 class VI_Scene;
+class EnvContextObservable;
 
 class SHP3DProcessor : public VI_Observer {
 private:
-	const EnvContext* _envContext;
+	std::shared_ptr<EnvContextObservable> _observable;
 	shared_ptr<SHP3D> _vizPlugin;
 	shared_ptr<EnVistasGeometryPlugin> _dataPlugin;
 	int _activeColumn;
 	int _currentYear;
 	SHP3DProcessor(const SHP3DProcessor& rhs);
 public:
-	SHP3DProcessor(const EnvContext* context);
+	SHP3DProcessor(std::shared_ptr<EnvContextObservable>& observable);
 	virtual ~SHP3DProcessor();
 	void AddObjectToScene(VI_Scene& scene);
 	//the only way new visualization gets rendered is via this method.

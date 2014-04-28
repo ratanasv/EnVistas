@@ -24,20 +24,19 @@ static shared_ptr<SHP3D> LoadSHP3D(const VI_Path& path) {
 	return shared_ptr<SHP3D>(new SHP3D());
 }
 
-SHP3DProcessor::SHP3DProcessor(const EnvContext* context) : 
-	_envContext(context)
-{
+SHP3DProcessor::SHP3DProcessor(std::shared_ptr<EnvContextObservable>& observable) {
+	_observable = observable;
 	_vizPlugin = LoadSHP3D(VI_Path());
-	_dataPlugin.reset(new EnVistasGeometryPlugin(_envContext));
+	_dataPlugin.reset(new EnVistasGeometryPlugin(_observable));
 	_vizPlugin->SetDataSynchronous(_dataPlugin.get());
-	_activeColumn = _envContext->pMapLayer->m_activeField;
-	_currentYear = _envContext->currentYear;
-	EnvContextObservable::INSTANCE.AddObserver(this);
+	_activeColumn = _observable->GetActiveColumn();
+	_currentYear = _observable->GetCurrentYear();
+	_observable->AddObserver(this);
 }
 
 
 SHP3DProcessor::~SHP3DProcessor() {
-	EnvContextObservable::INSTANCE.DeleteObserver(this);
+	_observable->DeleteObserver(this);
 }
 
 
@@ -53,11 +52,6 @@ void SHP3DProcessor::Update(const VI_Observable* const observable) {
 	auto context = dynamic_cast<const EnvContextObservable*>(observable);
 	if (!context) {
 		return;
-	}
-
-	if (_envContext != context->GetEnvContext()) {
-		_envContext = context->GetEnvContext();
-		_dataPlugin->SetEnvContext(_envContext);
 	}
 
 	if (_activeColumn != context->GetActiveColumn()) {

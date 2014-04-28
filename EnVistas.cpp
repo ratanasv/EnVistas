@@ -51,22 +51,26 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	// Because Envision will also call UpdateWindow() during runtime, we don't need 
 	// to do anything here, we'll use UpdateWindow() instead
 	m_currentYear = pContext->currentYear;
-	EnvContextObservable::INSTANCE.SetCurrentYear(pContext->currentYear);
-	EnvContextObservable::INSTANCE.SetEnvContext(pContext);
-	EnvContextObservable::INSTANCE.NotifyObservers();
+
+	if (!_observable) {
+		throw logic_error("_observable has never been init");
+	}
+	_observable->SetCurrentYear(pContext->currentYear);
+	_observable->SetEnvContext(pContext);
+	_observable->NotifyObservers();
 	return TRUE; 
 }
 
 
 BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
-	EnvContextObservable::INSTANCE.SetEnvContext(pContext);
+	_observable.reset(new EnvContextObservable(pContext));
 
 	CWnd* pParent = pContext->pWnd;
 	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
 	
 
 	//must be called after glewInit since it internally makes OpenGL calls.
-	_processor.reset(new SHP3DProcessor(pContext));
+	_processor.reset(new SHP3DProcessor(_observable));
 	pWnd->AttachVisualization(_processor->_vizPlugin);
 
 	pWnd->m_useCurrent = true;
@@ -123,6 +127,14 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 	_parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = glCanvasWnd;
 
 	return glCanvasWnd;
+}
+
+EnVistas::EnVistas(void) : EnvVisualizer( VT_RUNTIME | VT_POSTRUN_GRAPH )
+	, m_currentRun( 0 )
+	, m_currentYear( 0 )
+	, m_nextID( 86000 ) 
+{
+	
 }
 
 

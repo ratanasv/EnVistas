@@ -4,8 +4,8 @@
 #include <MAP.h>
 
 class EnvContextObservable : public VI_Observable {
-private:
-	EnvContextObservable();
+public:
+	EnvContextObservable(EnvContext* context);
 	EnvContextObservable(const EnvContextObservable& rhs);
 	
 public:
@@ -17,8 +17,6 @@ public:
 	void SetEnvContext(EnvContext* context);
 	static int OnHandlerCallback(Map*, NOTIFY_TYPE, int, LONG_PTR, LONG_PTR );
 
-public:
-	static EnvContextObservable INSTANCE;
 
 private:
 	int _currentYear;

@@ -10,15 +10,12 @@
 
 class EnVistasWnd;
 class SHP3DProcessor;
+class EnvContextObservable;
 
 class EnVistas : public EnvVisualizer
 {
 public:
-   EnVistas( void ) : EnvVisualizer( VT_RUNTIME | VT_POSTRUN_GRAPH )
-      , m_currentRun( 0 )
-      , m_currentYear( 0 )
-      , m_nextID( 86000 )
-      { }
+   EnVistas( void );
 
    std::vector<CWnd*> _listOfWindows;
    std::map<HWND, EnVistasWnd*> _parentToEnVistasWindow;
@@ -45,6 +42,7 @@ private:
    int m_currentRun;
    int m_currentYear;    // zero-based!!! not
    std::shared_ptr<SHP3DProcessor> _processor;
+   std::shared_ptr<EnvContextObservable> _observable;
 };
 
 

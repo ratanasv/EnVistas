@@ -8,6 +8,7 @@
 #include "SHP3DUtility.h"
 #include <EnvEngine/DeltaArray.h>
 #include <EnvInterface.h>
+#include "EnvContextObservable.h"
 
 using std::vector;
 using std::logic_error;
@@ -25,10 +26,11 @@ static const VI_String METHOD_FOR_VISTAS_ERROR("This class is for interfacing wi
 static const VI_String NOT_YET_IMPLEMENTED_ERROR("Not implemented yet. Talk to Vir\
 												 about this.");
 
-EnVistasGeometryPlugin::EnVistasGeometryPlugin(const EnvContext* in) : 
-	_envContext(in) 
+EnVistasGeometryPlugin::EnVistasGeometryPlugin(
+	std::shared_ptr<EnvContextObservable>& observable) 
 {
-
+	_observable = observable;
+	_envContext = _observable->GetEnvContext();
 	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
 	unsigned numShapes = polyArray->GetCount();
 	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
@@ -61,7 +63,11 @@ EnVistasGeometryPlugin::EnVistasGeometryPlugin(const EnvContext* in) :
 		}
 	}
 	_shapeArray = VI_ShapeArray(shapeArray, GetShapeExtents());
+	_observable->AddObserver(this);
+}
 
+EnVistasGeometryPlugin::~EnVistasGeometryPlugin() {
+	_observable->DeleteObserver(this);
 }
 
 
@@ -285,10 +291,6 @@ VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeColumn(
 	}
 }
 
-void EnVistasGeometryPlugin::SetEnvContext(const EnvContext* context) {
-	std::lock_guard<boost::shared_mutex> lk(_readWriteMutex);
-	_envContext = context;
-}
 
 int EnVistasGeometryPlugin::GetPolyArraySize() {
 	return _envContext->pMapLayer->m_pPolyArray->GetCount();
@@ -359,4 +361,13 @@ bool EnVistasGeometryPlugin::IsActiveColumn(const DELTA& delta) const {
 
 bool EnVistasGeometryPlugin::IsCurrentYear(const DELTA& delta) const {
 	return delta.year == _envContext->currentYear;
+}
+
+void EnVistasGeometryPlugin::Update(const VI_Observable* const observable) {
+	auto context = dynamic_cast<const EnvContextObservable*>(observable);
+	if (!context) {
+		return;
+	}
+
+	_envContext = context->GetEnvContext();
 }

@@ -8,12 +8,14 @@ class MapLayer;
 class Bin;
 class EnvContext;
 class DELTA;
+class EnvContextObservable;
 ////////////////////////////////////
 // shape provider for Vistas engine
 ////////////////////////////////////
-class EnVistasGeometryPlugin : public VI_ShapeDeltaDataPlugin {
+class EnVistasGeometryPlugin : public VI_ShapeDeltaDataPlugin, public VI_Observer {
 public:
-	EnVistasGeometryPlugin(const EnvContext* in);
+	EnVistasGeometryPlugin(std::shared_ptr<EnvContextObservable>& observable);
+	virtual ~EnVistasGeometryPlugin();
 
 	/* VI_PluginBase Methods. */
 	virtual VI_String		GetFactoryRegistryName();
@@ -65,7 +67,7 @@ public:
 
 	virtual std::shared_ptr<const std::vector<VI_ShapeDelta>> GetDeltaArray() const;
 
-	void SetEnvContext(const EnvContext* context);
+	virtual void Update(const VI_Observable* const observable);
 
 private:
 	VI_Color ConvertToColor(const Bin& bin) const;
@@ -78,6 +80,7 @@ private:
 	bool IsCurrentYear(const DELTA& delta) const;
 
 private:
+	std::shared_ptr<EnvContextObservable> _observable;
 	mutable boost::shared_mutex _readWriteMutex;
 	const EnvContext* _envContext;
 	VI_ShapeArray _shapeArray;
