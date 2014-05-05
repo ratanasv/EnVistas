@@ -15,6 +15,7 @@ public:
 	void SetCurrentYear(int year);
 	void SetActiveColumn(int column);
 	void SetEnvContext(EnvContext* context);
+	int GetRunTimeRange() const;
 	static int OnHandlerCallback(Map*, NOTIFY_TYPE, int, LONG_PTR, LONG_PTR );
 
 

@@ -5,20 +5,23 @@
 #include "EnVistas.h"
 #include "EnVistasControl.h"
 #include "afxdialogex.h"
+#include "EnvContextObservable.h"
 
-
+using namespace std;
 // EnVistasControl dialog
 
 IMPLEMENT_DYNAMIC(EnVistasControl, CDialogEx)
 
-EnVistasControl::EnVistasControl(CWnd* pParent /*=NULL*/)
-	: CDialogEx(EnVistasControl::IDD, pParent)
+EnVistasControl::EnVistasControl(CWnd* pParent, 
+	shared_ptr<EnvContextObservable>& observable)
+	: CDialogEx(EnVistasControl::IDD, pParent), _observable(observable)
 {
-	
+	_observable->AddObserver(this);
 }
 
 EnVistasControl::~EnVistasControl()
 {
+	_observable->DeleteObserver(this);
 }
 
 void EnVistasControl::DoDataExchange(CDataExchange* pDX)
@@ -46,10 +49,10 @@ END_MESSAGE_MAP()
 
 void EnVistasControl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	_timelineSlider.SetRange(0, 13, 1);
-	_timelineSlider.SetTicFreq(13);
-	int what = _timelineSlider.GetPos();
 	CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+	int what = _timelineSlider.GetPos();
+	_observable->SetCurrentYear(what);
+	_observable->NotifyObservers();
 }
 
 
@@ -58,4 +61,16 @@ int EnVistasControl::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CDialogEx::OnCreate(lpCreateStruct) == -1) {
 		return -1;
 	}
+
+	//_timelineSlider.SetRange(0, _observable->GetRunTimeRange(), 1);
+}
+
+void EnVistasControl::Update(const VI_Observable* const observable) {
+	auto context = dynamic_cast<const EnvContextObservable*>(observable);
+	if (!context) {
+		return;
+	}
+
+	_timelineSlider.SetRange(0, context->GetRunTimeRange(), 1);
+	_timelineSlider.SetPos(context->GetCurrentYear());
 }

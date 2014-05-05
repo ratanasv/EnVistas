@@ -55,7 +55,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	if (!_observable) {
 		throw logic_error("_observable has never been init");
 	}
-	_observable->SetCurrentYear(pContext->currentYear);
+	_observable->SetCurrentYear(pContext->yearOfRun);
 	_observable->SetEnvContext(pContext);
 	_observable->NotifyObservers();
 	return TRUE; 
@@ -119,7 +119,7 @@ EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 	glCanvasWnd->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
 		rect, parentWindowObject, m_nextID++ );
 
-	EnVistasControl* controlWnd = new EnVistasControl(parentWindowObject);
+	EnVistasControl* controlWnd = new EnVistasControl(parentWindowObject, _observable);
 	int result = controlWnd->Create(EnVistasControl::IDD, parentWindowObject);
 
 	_listOfWindows.push_back(glCanvasWnd);

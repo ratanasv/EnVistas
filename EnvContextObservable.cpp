@@ -5,7 +5,7 @@ EnvContextObservable::EnvContextObservable(EnvContext* context) {
 	_envContext = context;
 	_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
 		EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
-	SetCurrentYear(_envContext->currentYear);
+	SetCurrentYear(_envContext->yearOfRun);
 	SetActiveColumn(_envContext->pMapLayer->m_activeField);
 }
 
@@ -38,7 +38,7 @@ void EnvContextObservable::SetEnvContext(EnvContext* context) {
 		_envContext = context;
 		_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
 			EnvContextObservable::OnHandlerCallback, (LONG_PTR)this);
-		SetCurrentYear(_envContext->currentYear);
+		SetCurrentYear(_envContext->yearOfRun);
 		SetActiveColumn(_envContext->pMapLayer->m_activeField);
 	}
 }
@@ -52,4 +52,12 @@ int EnvContextObservable::OnHandlerCallback(
 		thisObject->NotifyObservers();
 	}
 	return 1;
+}
+
+int EnvContextObservable::GetRunTimeRange() const {
+	if (!_envContext->pDeltaArray) {
+		return 1;
+	}
+
+	return _envContext->endYear - _envContext->startYear;
 }
