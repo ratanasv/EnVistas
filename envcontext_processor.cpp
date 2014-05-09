@@ -45,7 +45,9 @@ void SHP3DProcessor::OnActiveColumnChanged() {
 }
 
 void SHP3DProcessor::OnCurrentYearChanged() {
-	_vizPlugin->DeltaUpdateSynchronous();
+	if (_observable->GetEnvContext()->pDeltaArray) {
+		_vizPlugin->DeltaUpdateSynchronous();
+	}
 }
 
 void SHP3DProcessor::Update(const VI_Observable* const observable) {

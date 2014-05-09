@@ -53,7 +53,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	m_currentYear = pContext->currentYear;
 
 	if (!_observable) {
-		throw logic_error("_observable has never been init");
+		_observable.reset(new EnvContextObservable(pContext));
 	}
 	_observable->SetCurrentYear(pContext->yearOfRun);
 	_observable->SetEnvContext(pContext);
@@ -63,8 +63,9 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 
 
 BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
-	_observable.reset(new EnvContextObservable(pContext));
-
+	if (!_observable) {
+		_observable.reset(new EnvContextObservable(pContext));
+	}
 	CWnd* pParent = pContext->pWnd;
 	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
 	
@@ -77,6 +78,7 @@ BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
 	pWnd->m_currentYear = pContext->currentYear;
 	pWnd->m_currentRun  = pContext->run;
 
+	_observable->NotifyObservers();
 	return TRUE;
 }
 
