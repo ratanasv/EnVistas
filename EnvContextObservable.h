@@ -6,6 +6,7 @@
 class EnvContextObservable : public VI_Observable {
 public:
 	EnvContextObservable(EnvContext* context);
+private:
 	EnvContextObservable(const EnvContextObservable& rhs);
 	
 public:
