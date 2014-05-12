@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="UnitTest">
+      <UniqueIdentifier>{a626182b-f704-4185-bb11-946439e465bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -47,6 +50,12 @@
     </ClCompile>
     <ClCompile Include="EnvContextObservable.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>UnitTest</Filter>
+    </ClCompile>
+    <ClCompile Include="EnvContextProcessorTest.cpp">
+      <Filter>UnitTest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
