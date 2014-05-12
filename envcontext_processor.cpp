@@ -56,6 +56,7 @@ void SHP3DProcessor::Update(const VI_Observable* const observable) {
 		return;
 	}
 
+	//OnActiveColumnChanged() is expensive. Update only when necessary.
 	if (_activeColumn != context->GetActiveColumn()) {
 		_activeColumn = context->GetActiveColumn();
 		OnActiveColumnChanged();

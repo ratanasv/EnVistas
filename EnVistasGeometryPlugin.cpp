@@ -31,6 +31,7 @@ EnVistasGeometryPlugin::EnVistasGeometryPlugin(
 {
 	_observable = observable;
 	_envContext = _observable->GetEnvContext();
+	_currentYear = _observable->GetCurrentYear();
 	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
 	unsigned numShapes = polyArray->GetCount();
 	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
@@ -268,7 +269,15 @@ shared_ptr<vector<VI_ImmutableAbstract>> EnVistasGeometryPlugin::GetAttributeArr
 			result->push_back(VI_ImmutableAbstract(buffer));
 		}
 		break;
+	case VI_Abstract::VALUE_TYPE_DOUBLE:
+		for (int i=0; i<numShapes; i++) {
+			double buffer;
+			_envContext->pMapLayer->GetData(i, _envContext->pMapLayer->m_activeField, buffer);
+			result->push_back(VI_ImmutableAbstract(buffer));
+		}
+		break;
 	default:
+		throw runtime_error("This data type is not suppported");
 		break;
 	}
 	return result;
@@ -294,6 +303,7 @@ VI_Abstract::AbstractType EnVistasGeometryPlugin::GetDataTypeColumn(
 	case TYPE_LONG:
 		return VI_Abstract::VALUE_TYPE_INT;
 	case TYPE_FLOAT:
+	case TYPE_DOUBLE:
 		return VI_Abstract::VALUE_TYPE_DOUBLE;
 	case TYPE_CHAR:
 		return VI_Abstract::VALUE_TYPE_STRING;
@@ -368,11 +378,11 @@ bool EnVistasGeometryPlugin::CheckTypeVDataAndMapLayer(const DELTA& delta) const
 }
 
 bool EnVistasGeometryPlugin::IsActiveColumn(const DELTA& delta) const {
-	return delta.cell == _envContext->pMapLayer->m_activeField;
+	return delta.col == _envContext->pMapLayer->m_activeField;
 }
 
 bool EnVistasGeometryPlugin::IsCurrentYear(const DELTA& delta) const {
-	return delta.year == _envContext->currentYear;
+	return delta.year == _currentYear;
 }
 
 void EnVistasGeometryPlugin::Update(const VI_Observable* const observable) {
@@ -382,4 +392,5 @@ void EnVistasGeometryPlugin::Update(const VI_Observable* const observable) {
 	}
 
 	_envContext = context->GetEnvContext();
+	_currentYear = context->GetCurrentYear();
 }

@@ -83,5 +83,6 @@ private:
 	std::shared_ptr<EnvContextObservable> _observable;
 	mutable boost::shared_mutex _readWriteMutex;
 	const EnvContext* _envContext;
+	int _currentYear;
 	VI_ShapeArray _shapeArray;
 };
