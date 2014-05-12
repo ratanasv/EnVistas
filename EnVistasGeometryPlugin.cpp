@@ -226,6 +226,7 @@ bool EnVistasGeometryPlugin::IsDataDiscrete( const VI_String& attribute ) {
 	case TYPE_CHAR:
 		return true;
 	case TYPE_FLOAT:
+	case TYPE_DOUBLE:
 		return false;
 	default:
 		throw runtime_error("Unsupported DataType");
@@ -233,8 +234,19 @@ bool EnVistasGeometryPlugin::IsDataDiscrete( const VI_String& attribute ) {
 	}
 }
 
-VI_ShapeDataPlugin::MinMaxColorArray EnVistasGeometryPlugin::GetMinMaxColorArray( const VI_String& attribute ) {
-	throw METHOD_FOR_VISTAS_ERROR;
+VI_ShapeDataPlugin::MinMaxColorArray EnVistasGeometryPlugin::GetMinMaxColorArray(
+	const VI_String& attribute) 
+{
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
+	auto result = InitDynamicArray<VI_ShapeDataPlugin::MinMaxColor>();
+	auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
+	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
+	for (int i=0; i<numBin; i++) {
+		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
+		auto color = ConvertToColor(bin);
+		result->push_back(MinMaxColor(bin.m_minVal, bin.m_maxVal, color));
+	}
+	return result;
 }
 
 VI_ShapeDataPlugin::ColorLabelArray EnVistasGeometryPlugin::ObtainColorLabelArray( const VI_String& attribute ) {
