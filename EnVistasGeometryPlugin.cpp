@@ -179,7 +179,8 @@ map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap(
 	for (int i=0; i<numBin; i++) {
 		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
 		auto color = ConvertToColor(bin);
-		result[VI_ImmutableAbstract(bin.m_minVal)] = color;
+		result.insert(pair<VI_ImmutableAbstract, VI_Color>(
+			VI_ImmutableAbstract(bin.m_minVal), color));
 	}
 	return result;
 }
