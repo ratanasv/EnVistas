@@ -70,7 +70,7 @@ public:
 	virtual void Update(const VI_Observable* const observable);
 
 private:
-	VI_Color ConvertToColor(const Bin& bin) const;
+	static VI_Color ConvertToColor(const Bin& bin);
 	struct shpmainheader GetShpMainHeader() const;
 	struct shpmainheader GetShapeExtents() const;
 	VI_Abstract::AbstractType GetDataTypeColumn(int column) const;

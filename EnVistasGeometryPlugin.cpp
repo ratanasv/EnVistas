@@ -163,7 +163,7 @@ VI_ShapeArray EnVistasGeometryPlugin::GetShapeArray() {
 	return _shapeArray;
 }
 
-VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) const {
+VI_Color EnVistasGeometryPlugin::ConvertToColor(const Bin& bin) {
 	const auto& colorRef = bin.m_color;
 	return VI_Color((int)GetRValue(colorRef), (int)GetGValue(colorRef), 
 		(int)GetBValue(colorRef));
