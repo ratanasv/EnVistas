@@ -173,16 +173,22 @@ map<VI_ImmutableAbstract, VI_Color> EnVistasGeometryPlugin::ObtainValueColorMap(
 	const VI_String& attribute ) 
 {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	map<VI_ImmutableAbstract, VI_Color> result;
-	auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
-	const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
-	for (int i=0; i<numBin; i++) {
-		auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
-		auto color = ConvertToColor(bin);
-		result.insert(pair<VI_ImmutableAbstract, VI_Color>(
-			VI_ImmutableAbstract(bin.m_minVal), color));
+	
+	if (_cachedColorMap.find(USE_ACTIVE_COL) == _cachedColorMap.end()) {
+		map<VI_ImmutableAbstract, VI_Color> result;
+		auto mutableMapLayer = const_cast<MapLayer*>(_envContext->pMapLayer);
+		const int numBin = mutableMapLayer->GetBinCount(USE_ACTIVE_COL);
+		for (int i=0; i<numBin; i++) {
+			auto bin = _envContext->pMapLayer->GetBin(USE_ACTIVE_COL, i);
+			auto color = ConvertToColor(bin);
+			result.insert(pair<VI_ImmutableAbstract, VI_Color>(
+				VI_ImmutableAbstract(bin.m_minVal), color));
+		}
+		_cachedColorMap[USE_ACTIVE_COL] = result;
 	}
-	return result;
+
+	
+	return _cachedColorMap[USE_ACTIVE_COL];
 }
 
 map<VI_ImmutableAbstract, VI_String> EnVistasGeometryPlugin::ObtainValueLabelMap( 

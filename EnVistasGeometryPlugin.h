@@ -85,4 +85,7 @@ private:
 	const EnvContext* _envContext;
 	int _currentYear;
 	VI_ShapeArray _shapeArray;
+	
+	//used for caching the result in ObtainValueColorMap().
+	map<int, map<VI_ImmutableAbstract, VI_Color>> _cachedColorMap;
 };
