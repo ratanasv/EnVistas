@@ -41,12 +41,23 @@ SHP3DProcessor::~SHP3DProcessor() {
 
 
 void SHP3DProcessor::OnActiveColumnChanged() {
-	_vizPlugin->UpdateSynchronous();
+	try {
+		_vizPlugin->UpdateSynchronous();
+	} catch(runtime_error& error) {
+		Report::ErrorMsg(error.what());
+	}
+	
 }
 
 void SHP3DProcessor::OnCurrentYearChanged() {
 	if (_observable->GetEnvContext()->pDeltaArray) {
-		_vizPlugin->DeltaUpdateSynchronous();
+		try {
+			_vizPlugin->DeltaUpdateSynchronous();
+		} catch(runtime_error& error) {
+			Report::ErrorMsg(error.what());
+			int result = Report::YesNoMsg("Yo mom is fat?");
+			Report::InfoMsg(to_string(result).c_str());
+		}
 	}
 }
 
