@@ -365,13 +365,30 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 		if (!IsCurrentYear(delta) || !IsActiveColumn(delta)) {
 			continue;
 		}
-		int oldValue, newValue;
-		delta.oldValue.GetAsInt(oldValue);
-		delta.newValue.GetAsInt(newValue);
-		result->push_back(VI_ShapeDelta(delta.cell, 
-			VI_ImmutableAbstract(oldValue), 
-			VI_ImmutableAbstract(newValue)
-		));
+		switch(GetDataTypeColumn(USE_ACTIVE_COL)) {
+		case VI_Abstract::VALUE_TYPE_INT: {
+			int oldValue, newValue;
+			delta.oldValue.GetAsInt(oldValue);
+			delta.newValue.GetAsInt(newValue);
+			result->push_back(VI_ShapeDelta(delta.cell, 
+				VI_ImmutableAbstract(oldValue), 
+				VI_ImmutableAbstract(newValue)
+			));
+			break;
+		}
+		case VI_Abstract::VALUE_TYPE_DOUBLE: {
+			double oldValue, newValue;
+			delta.oldValue.GetAsDouble(oldValue);
+			delta.newValue.GetAsDouble(newValue);
+			result->push_back(VI_ShapeDelta(delta.cell, 
+				VI_ImmutableAbstract(oldValue), 
+				VI_ImmutableAbstract(newValue)
+			));
+			break;
+		}
+		default:
+			throw runtime_error("unsuppported data type");
+		}
 	}
 	return result;
 }
