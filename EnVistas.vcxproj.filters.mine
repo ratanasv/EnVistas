@@ -51,9 +51,6 @@
     <ClCompile Include="EnvContextObservable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EnVistasSpltWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>UnitTest</Filter>
     </ClCompile>
@@ -90,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnvContextObservable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnVistasSpltWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

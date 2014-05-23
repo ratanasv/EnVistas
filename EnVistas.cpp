@@ -12,6 +12,7 @@
 #include "envcontext_processor.h"
 #include "EnVistasControl.h"
 #include "EnvContextObservable.h"
+#include "EnVistasSpltWnd.h"
 
 #ifdef _DEBUG
 //#define new DEBUG_NEW
@@ -58,6 +59,7 @@ BOOL EnVistas::Run( EnvContext *pContext ) {
 	_observable->SetCurrentYear(pContext->yearOfRun);
 	_observable->SetEnvContext(pContext);
 	_observable->NotifyObservers();
+
 	return TRUE; 
 }
 
@@ -66,10 +68,10 @@ BOOL EnVistas::InitWindow( EnvContext* pContext, HWND hParent ) {
 	if (!_observable) {
 		_observable.reset(new EnvContextObservable(pContext));
 	}
-	CWnd* pParent = pContext->pWnd;
-	EnVistasWnd* pWnd = AddWindow(pContext, pParent);   // adds and creates a window;
-	
 
+	CWnd* pParent = pContext->pWnd;
+
+	EnVistasWnd* pWnd = AddWindow(pContext, pParent);
 	//must be called after glewInit since it internally makes OpenGL calls.
 	_processor.reset(new SHP3DProcessor(_observable));
 	pWnd->AttachVisualization(_processor->_vizPlugin);
@@ -111,24 +113,25 @@ BOOL EnVistas::UpdateWindow( EnvContext* pContext, HWND hParent ) {
 	return TRUE; 
 } 
 
-
-EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject) 
+EnVistasWnd* EnVistas::AddWindow(EnvContext* context, CWnd* parentWindowObject)
 {
 	RECT rect;
-	parentWindowObject->GetClientRect( &rect );
+	parentWindowObject->GetClientRect(&rect);
+
+	EnVistasSpltWnd* spltWnd = new EnVistasSpltWnd();
 	EnVistasWnd* glCanvasWnd = new EnVistasWnd(context, rect.right, rect.bottom);
 
-	glCanvasWnd->Create( NULL, "VISTASBackendForEnvision", WS_CHILD | WS_VISIBLE | WS_BORDER, 
-		rect, parentWindowObject, m_nextID++ );
-
-	EnVistasControl* controlWnd = new EnVistasControl(parentWindowObject, _observable);
-	int result = controlWnd->Create(EnVistasControl::IDD, parentWindowObject);
-
+	EnVistasControl* controlWnd = new EnVistasControl(spltWnd, _observable);
+	spltWnd->ControlAndDisp(controlWnd, glCanvasWnd);
+	spltWnd->Create(NULL, "VISTASSPLIT", WS_CHILD | WS_VISIBLE, rect, parentWindowObject, m_nextID++);
+	spltWnd->MoveBar(100);
+	_listOfWindows.push_back(spltWnd);
 	_listOfWindows.push_back(glCanvasWnd);
 	_listOfWindows.push_back(controlWnd);
-	_parentToEnVistasWindow[parentWindowObject->GetSafeHwnd()] = glCanvasWnd;
+	_parentToEnVistasWindow[spltWnd->GetSafeHwnd()] = glCanvasWnd;
 
 	return glCanvasWnd;
+
 }
 
 EnVistas::EnVistas(void) : EnvVisualizer( VT_RUNTIME | VT_POSTRUN_GRAPH )

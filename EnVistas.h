@@ -33,7 +33,8 @@ public:
    
 private:
    // other methods
-   EnVistasWnd* AddWindow(EnvContext* context, CWnd* pParent);
+   //EnVistasWnd* AddWindow(EnvContext* context, CSplitterWnd* pParent);
+	EnVistasWnd* AddWindow(EnvContext* context, CWnd* pParent);
 
    // persistent data storage (one data object per run)
    //PtrArray< RUNDATA > m_runDataArray;
