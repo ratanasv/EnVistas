@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "EnvContextObservable.h"
 
+
+using namespace std;
+
 EnvContextObservable::EnvContextObservable(EnvContext* context) {
 	_envContext = context;
 	_envContext->pMapLayer->m_pMap->InstallNotifyHandler(
@@ -10,26 +13,32 @@ EnvContextObservable::EnvContextObservable(EnvContext* context) {
 }
 
 int EnvContextObservable::GetCurrentYear() const {
+	lock_guard<recursive_mutex> lock(_mutex);
 	return _currentYear;
 }
 
 int EnvContextObservable::GetActiveColumn() const {
+	lock_guard<recursive_mutex> lock(_mutex);
 	return _activeColumn;
 }
 
 EnvContext* EnvContextObservable::GetEnvContext() const {
+	lock_guard<recursive_mutex> lock(_mutex);
 	return _envContext;
 }
 
 void EnvContextObservable::SetCurrentYear(int year) {
+	lock_guard<recursive_mutex> lock(_mutex);
 	_currentYear = year;
 }
 
 void EnvContextObservable::SetActiveColumn(int column) {
+	lock_guard<recursive_mutex> lock(_mutex);
 	_activeColumn = column;
 }
 
 void EnvContextObservable::SetEnvContext(EnvContext* context) {
+	lock_guard<recursive_mutex> lock(_mutex);
 	if (_envContext != context) {
 		if (_envContext) {
 			_envContext->pMapLayer->m_pMap->RemoveNotifyHandler(
@@ -55,6 +64,7 @@ int EnvContextObservable::OnHandlerCallback(
 }
 
 int EnvContextObservable::GetRunTimeRange() const {
+	lock_guard<recursive_mutex> lock(_mutex);
 	if (!_envContext->pDeltaArray) {
 		return 1;
 	}

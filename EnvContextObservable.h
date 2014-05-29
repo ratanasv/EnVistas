@@ -2,6 +2,7 @@
 #include <vistas/Observer.h>
 #include <EnvExtension.h>
 #include <MAP.h>
+#include <mutex>
 
 class EnvContextObservable : public VI_Observable {
 public:
@@ -24,4 +25,5 @@ private:
 	int _currentYear;
 	int _activeColumn;
 	EnvContext* _envContext;
+	mutable std::recursive_mutex _mutex;
 };
