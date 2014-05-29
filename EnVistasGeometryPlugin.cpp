@@ -354,6 +354,7 @@ struct shpmainheader EnVistasGeometryPlugin::GetShapeExtents() const {
 shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>> 
 	EnVistasGeometryPlugin::GetDeltaArray() const 
 {
+	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
 	auto result = InitDynamicArray<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>();
 	auto deltas = _envContext->pDeltaArray;
 	if (!deltas) {
@@ -410,6 +411,7 @@ bool EnVistasGeometryPlugin::IsCurrentYear(const DELTA& delta) const {
 }
 
 void EnVistasGeometryPlugin::Update(const VI_Observable* const observable) {
+	lock_guard<boost::shared_mutex> lock(_readWriteMutex);
 	auto context = dynamic_cast<const EnvContextObservable*>(observable);
 	if (!context) {
 		return;

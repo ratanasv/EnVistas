@@ -126,13 +126,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);_DEBUG;_AFXEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\libs;..\3rdParty\EnVistas-depends\VISTAS Core\include;..\3rdParty\EnVistas-depends\VISTAS Plugins\ENVISION;..\3rdParty\EnVistas-depends\VISTAS Plugins\SHP3D;..\3rdParty\EnVistas-depends\target\dependencies_h;..\3rdParty\EnVistas-depends\target\dependencies_h\msvc;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost\serialization;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\libs;$(VISTAS_DIR)target\dependencies_h;$(VISTAS_DIR)target\dependencies_h\msvc;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);..\3rdParty\EnVistas-depends\boost_EnVistas_min\stage\lib$(Platform);$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
@@ -176,13 +176,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);_DEBUG;_AFXEXT;VISTAS_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\libs;..\3rdParty\EnVistas-depends\VISTAS Core\include;..\3rdParty\EnVistas-depends\VISTAS Plugins\ENVISION;..\3rdParty\EnVistas-depends\VISTAS Plugins\SHP3D;..\3rdParty\EnVistas-depends\target\dependencies_h;..\3rdParty\EnVistas-depends\target\dependencies_h\msvc;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost\serialization;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\libs;$(VISTAS_DIR)target\dependencies_h;$(VISTAS_DIR)target\dependencies_h\msvc;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);..\3rdParty\EnVistas-depends\boost_EnVistas_min\stage\lib$(Platform);$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VISTAS_DIR)target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);$(BOOST_DIR)stage/x64;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libs.lib;envision.lib;shp3d.lib;OpenGL32.lib;glu32.lib</AdditionalDependencies>
     </Link>
     <Midl>
@@ -195,7 +195,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /y ..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)\*.dll $(OutDir)</Command>
+      <Command>xcopy /y $(VISTAS_DIR)target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)\*.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Test|x64'">
@@ -235,7 +235,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);NDEBUG;_AFXEXT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\libs;..\3rdParty\EnVistas-depends\VISTAS Core\include;..\3rdParty\EnVistas-depends\VISTAS Plugins\ENVISION;..\3rdParty\EnVistas-depends\VISTAS Plugins\SHP3D;..\3rdParty\EnVistas-depends\target\dependencies_h;..\3rdParty\EnVistas-depends\target\dependencies_h\msvc;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost\serialization;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\libs;$(VISTAS_DIR)target\dependencies_h;$(VISTAS_DIR)target\dependencies_h\msvc;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -243,7 +243,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);..\3rdParty\EnVistas-depends\boost_EnVistas_min\stage\lib$(Platform);$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(PlatformName)\$(ConfigurationName);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration);Z:\bin\scidb-vistas\$(Platform)\$(PlatformToolset)\$(Configuration)\Plugins;Z:\bin\scidb-vistas\dependencies\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libs.lib; core.lib; envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
@@ -263,8 +263,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);NDEBUG;_AFXEXT;VISTAS_STATIC_LIB;BOOST_DIR=C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\;..\libs;..\3rdParty\EnVistas-depends\VISTAS Core\include;..\3rdParty\EnVistas-depends\VISTAS Plugins\ENVISION;..\3rdParty\EnVistas-depends\VISTAS Plugins\SHP3D;..\3rdParty\EnVistas-depends\target\dependencies_h;..\3rdParty\EnVistas-depends\target\dependencies_h\msvc;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost\serialization;C:\envision\src\3rdParty\EnVistas-depends\boost_EnVistas_min\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WXUSINGDLL;VISTAS_WX;BGDWIN32;WIN32;_WINDOWS;__EXPORT__=__declspec( dllimport);NDEBUG;_AFXEXT;VISTAS_STATIC_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\;..\libs;$(VISTAS_DIR)target\dependencies_h;$(VISTAS_DIR)target\dependencies_h\msvc;$(BOOST_DIR);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -272,7 +272,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\EnVistas.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);..\3rdParty\EnVistas-depends\boost_EnVistas_min\stage\lib$(Platform);$(OutDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VISTAS_DIR)target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration);$(BOOST_DIR)stage/x64;$(OutDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libs.lib;envision.lib; shp3d.lib; OpenGL32.lib; glu32.lib;</AdditionalDependencies>
     </Link>
     <Midl>
@@ -285,7 +285,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>xcopy /y ..\3rdParty\EnVistas-depends\target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)\*.dll $(OutDir)</Command>
+      <Command>xcopy /y $(VISTAS_DIR)target\dependencies_lib\$(Platform)\$(PlatformToolset)\$(Configuration)\*.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

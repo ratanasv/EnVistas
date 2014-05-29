@@ -55,8 +55,6 @@ void SHP3DProcessor::OnCurrentYearChanged() {
 			_vizPlugin->DeltaUpdateSynchronous();
 		} catch(runtime_error& error) {
 			Report::ErrorMsg(error.what());
-			int result = Report::YesNoMsg("Yo mom is fat?");
-			Report::InfoMsg(to_string(result).c_str());
 		}
 	}
 }
