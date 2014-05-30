@@ -84,6 +84,7 @@ private:
 	mutable boost::shared_mutex _readWriteMutex;
 	const EnvContext* _envContext;
 	int _currentYear;
+	int _previouslySeenYear;
 	VI_ShapeArray _shapeArray;
 	
 	//used for caching the result in ObtainValueColorMap().

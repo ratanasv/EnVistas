@@ -32,6 +32,7 @@ EnVistasGeometryPlugin::EnVistasGeometryPlugin(
 	_observable = observable;
 	_envContext = _observable->GetEnvContext();
 	_currentYear = _observable->GetCurrentYear();
+	_previouslySeenYear = _currentYear;
 	auto polyArray = _envContext->pMapLayer->m_pPolyArray;
 	unsigned numShapes = polyArray->GetCount();
 	shared_ptr<vector<VI_Shape>> shapeArray(new vector<VI_Shape>(numShapes));
@@ -355,40 +356,68 @@ shared_ptr<const vector<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>>
 	EnVistasGeometryPlugin::GetDeltaArray() const 
 {
 	boost::shared_lock<boost::shared_mutex> lk(_readWriteMutex);
-	auto result = InitDynamicArray<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>();
+	assert(_currentYear != _previouslySeenYear);
+
 	auto deltas = _envContext->pDeltaArray;
 	if (!deltas) {
 		throw logic_error("EnvContext has no delta array.");
 	}
+	
+	int direction = 1;
+	if (_currentYear - _previouslySeenYear > 0) {
+		direction = 1;
+	} else {
+		direction = -1;
+	}
+	auto result = InitDynamicArray<VI_ShapeDeltaDataPlugin::VI_ShapeDelta>();
+	for (int yearIt = _previouslySeenYear; yearIt != _currentYear; yearIt += direction) {
+		for (int i=0; i<deltas->GetSize(); i++) {
+			auto& delta = GetDelta(deltas, i);
+			if (yearIt != delta.year) {
+				continue;
+			}
+			if (!IsActiveColumn(delta)) {
+				continue;
+			}
 
-	for (int i=0; i<deltas->GetSize(); i++) {
-		auto& delta = GetDelta(deltas, i);
-		if (!IsCurrentYear(delta) || !IsActiveColumn(delta)) {
-			continue;
-		}
-		switch(GetDataTypeColumn(USE_ACTIVE_COL)) {
-		case VI_Abstract::VALUE_TYPE_INT: {
-			int oldValue, newValue;
-			delta.oldValue.GetAsInt(oldValue);
-			delta.newValue.GetAsInt(newValue);
-			result->push_back(VI_ShapeDelta(delta.cell, 
-				VI_ImmutableAbstract(oldValue), 
-				VI_ImmutableAbstract(newValue)
-			));
-			break;
-		}
-		case VI_Abstract::VALUE_TYPE_DOUBLE: {
-			double oldValue, newValue;
-			delta.oldValue.GetAsDouble(oldValue);
-			delta.newValue.GetAsDouble(newValue);
-			result->push_back(VI_ShapeDelta(delta.cell, 
-				VI_ImmutableAbstract(oldValue), 
-				VI_ImmutableAbstract(newValue)
-			));
-			break;
-		}
-		default:
-			throw runtime_error("unsuppported data type");
+			switch(GetDataTypeColumn(USE_ACTIVE_COL)) {
+			case VI_Abstract::VALUE_TYPE_INT: {
+				int oldValue, newValue;
+				delta.oldValue.GetAsInt(oldValue);
+				delta.newValue.GetAsInt(newValue);
+				if (direction == 1) {
+					result->push_back(VI_ShapeDelta(delta.cell, 
+						VI_ImmutableAbstract(oldValue), 
+						VI_ImmutableAbstract(newValue)
+					));
+				} else {
+					result->push_back(VI_ShapeDelta(delta.cell, 
+						VI_ImmutableAbstract(newValue), 
+						VI_ImmutableAbstract(oldValue)
+					));
+				}
+				break;
+			}
+			case VI_Abstract::VALUE_TYPE_DOUBLE: {
+				double oldValue, newValue;
+				delta.oldValue.GetAsDouble(oldValue);
+				delta.newValue.GetAsDouble(newValue);
+				if (direction == 1) {
+					result->push_back(VI_ShapeDelta(delta.cell, 
+						VI_ImmutableAbstract(oldValue), 
+						VI_ImmutableAbstract(newValue)
+					));
+				} else {
+					result->push_back(VI_ShapeDelta(delta.cell, 
+						VI_ImmutableAbstract(newValue), 
+						VI_ImmutableAbstract(oldValue)
+					));
+				}
+				break;
+			}
+			default:
+				throw runtime_error("unsuppported data type");
+			}
 		}
 	}
 	return result;
@@ -418,5 +447,7 @@ void EnVistasGeometryPlugin::Update(const VI_Observable* const observable) {
 	}
 
 	_envContext = context->GetEnvContext();
+	_previouslySeenYear = _currentYear;
 	_currentYear = context->GetCurrentYear();
+	
 }
